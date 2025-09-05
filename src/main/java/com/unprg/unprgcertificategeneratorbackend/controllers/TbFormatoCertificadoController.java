@@ -1,7 +1,7 @@
 package com.unprg.unprgcertificategeneratorbackend.controllers;
 
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbFirmaDto;
-import com.unprg.unprgcertificategeneratorbackend.services.TbFirmaService;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbFormatoCertificadoDto;
+import com.unprg.unprgcertificategeneratorbackend.services.TbFormatoCertificadoService;
 import com.unprg.unprgcertificategeneratorbackend.utils.ApiResponse;
 import com.unprg.unprgcertificategeneratorbackend.utils.GenericController;
 import com.unprg.unprgcertificategeneratorbackend.utils.GenericCrud;
@@ -16,31 +16,31 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tbfirmas")
+@RequestMapping("/api/tbformatocertificados")
 @RequiredArgsConstructor
-class TbFirmaController extends GenericController<TbFirmaDto, Integer> {
+class TbFormatoCertificadoController extends GenericController<TbFormatoCertificadoDto, Integer> {
 
-    private final TbFirmaService tbFirmaService;
+    private final TbFormatoCertificadoService tbFormatoCertificadoService;
 
     @Override
-    public GenericCrud<TbFirmaDto, Integer> getCrud() {
-        return tbFirmaService;
+    public GenericCrud<TbFormatoCertificadoDto, Integer> getCrud() {
+        return tbFormatoCertificadoService;
     }
 
     @Override
-    protected Integer getPK(TbFirmaDto d) {
+    protected Integer getPK(TbFormatoCertificadoDto d) {
         return d.getId();
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> findById(@PathVariable("id") Integer k) {
-        TbFirmaDto dto = getCrud().findById(k);
-        return ResponseEntity.ok(ApiResponse.ok("obtener Firma por id", dto));
+        TbFormatoCertificadoDto dto = getCrud().findById(k);
+        return ResponseEntity.ok(ApiResponse.ok("obtener Formato Certificado por id", dto));
     }
 
     @GetMapping(path = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> findAll() {
-        List<TbFirmaDto> list = tbFirmaService.findAll();
-        return ResponseEntity.ok(ApiResponse.ok("obtener Firmas", list));
+        List<TbFormatoCertificadoDto> list = tbFormatoCertificadoService.findAll();
+        return ResponseEntity.ok(ApiResponse.ok("obtener Formatos Certificado", list));
     }
 }
