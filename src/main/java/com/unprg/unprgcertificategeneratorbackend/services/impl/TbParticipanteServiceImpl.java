@@ -1,8 +1,12 @@
 package com.unprg.unprgcertificategeneratorbackend.services.impl;
 
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoDto;
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbParticipanteDto;
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbParticipanteIdDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbPersonaDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbEvento;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbParticipante;
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbPersona;
 import com.unprg.unprgcertificategeneratorbackend.repositories.TbParticipanteRepository;
 import com.unprg.unprgcertificategeneratorbackend.services.TbParticipanteService;
 import jakarta.transaction.Transactional;
@@ -46,5 +50,15 @@ public class TbParticipanteServiceImpl implements TbParticipanteService {
     public List<TbParticipanteDto> findAll() {
         List<TbParticipante> tbParticipanteList = tbParticipanteRepository.findAll();
         return tbParticipanteList.stream().map(participante -> TbParticipanteDto.build().fromEntity(participante)).toList();
+    }
+
+    @Override
+    public List<TbParticipanteDto> findAllByIdEvento(Integer k) {
+        TbParticipanteDto template = TbParticipanteDto.builder()
+                .defTbEvento(TbEventoDto.build())
+                .defTbPersona(TbPersonaDto.build())
+                .build();
+        List<TbParticipante> tbParticipanteList = tbParticipanteRepository.findAllByIdtbEventoId(k);
+        return tbParticipanteList.stream().map(template::fromEntity).toList();
     }
 }

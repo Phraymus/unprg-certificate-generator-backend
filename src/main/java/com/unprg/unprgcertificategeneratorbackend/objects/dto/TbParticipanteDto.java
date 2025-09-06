@@ -24,8 +24,8 @@ public class TbParticipanteDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private TbParticipanteIdDto id;
-    private TbEventoDto idtbEvento;
-    private TbPersonaDto idtbPersona;
+    private TbEventoDto tbEvento;
+    private TbPersonaDto tbPersona;
     private String estado;
     private String fechaInscripcion;
     private BigDecimal nota;
@@ -36,11 +36,11 @@ public class TbParticipanteDto implements Serializable {
 
     @JsonIgnore
     @Builder.Default
-    private TbEventoDto defIdtbEvento = null;
+    private TbEventoDto defTbEvento = null;
 
     @JsonIgnore
     @Builder.Default
-    private TbPersonaDto defIdtbPersona = null;
+    private TbPersonaDto defTbPersona = null;
 
     public static TbParticipanteDto build() {
         return TbParticipanteDto.builder().build();
@@ -58,13 +58,13 @@ public class TbParticipanteDto implements Serializable {
                 dto.setId(TbParticipanteIdDto.build().fromEntity(template.getDefId(), entity.getId()));
                 dto.setDefId(template.getDefId());
             }
-            if (template.getDefIdtbEvento() != null) {
-                dto.setIdtbEvento(TbEventoDto.build().fromEntity(template.getDefIdtbEvento(), entity.getIdtbEvento()));
-                dto.setDefIdtbEvento(template.getDefIdtbEvento());
+            if (template.getDefTbEvento() != null) {
+                dto.setTbEvento(TbEventoDto.build().fromEntity(template.getDefTbEvento(), entity.getIdtbEvento()));
+                dto.setDefTbEvento(template.getDefTbEvento());
             }
-            if (template.getDefIdtbPersona() != null) {
-                dto.setIdtbPersona(TbPersonaDto.build().fromEntity(template.getDefIdtbPersona(), entity.getIdtbPersona()));
-                dto.setDefIdtbPersona(template.getDefIdtbPersona());
+            if (template.getDefTbPersona() != null) {
+                dto.setTbPersona(TbPersonaDto.build().fromEntity(template.getDefTbPersona(), entity.getIdtbPersona()));
+                dto.setDefTbPersona(template.getDefTbPersona());
             }
             return dto;
         } else {
@@ -84,13 +84,13 @@ public class TbParticipanteDto implements Serializable {
                 dto.setId(TbParticipanteIdDto.build().fromProxy(template.getDefId(), entity.getId()));
                 dto.setDefId(template.getDefId());
             }
-            if (template.getDefIdtbEvento() != null) {
-                dto.setIdtbEvento(TbEventoDto.build().fromProxy(template.getDefIdtbEvento(), entity.getIdtbEvento()));
-                dto.setDefIdtbEvento(template.getDefIdtbEvento());
+            if (template.getDefTbEvento() != null) {
+                dto.setTbEvento(TbEventoDto.build().fromProxy(template.getDefTbEvento(), entity.getTbEvento()));
+                dto.setDefTbEvento(template.getDefTbEvento());
             }
-            if (template.getDefIdtbPersona() != null) {
-                dto.setIdtbPersona(TbPersonaDto.build().fromProxy(template.getDefIdtbPersona(), entity.getIdtbPersona()));
-                dto.setDefIdtbPersona(template.getDefIdtbPersona());
+            if (template.getDefTbPersona() != null) {
+                dto.setTbPersona(TbPersonaDto.build().fromProxy(template.getDefTbPersona(), entity.getTbPersona()));
+                dto.setDefTbPersona(template.getDefTbPersona());
             }
             return dto;
         } else {
@@ -108,8 +108,8 @@ public class TbParticipanteDto implements Serializable {
                 .estado(this.getEstado())
                 .fechaInscripcion(this.getFechaInscripcion())
                 .nota(this.getNota())
-                .idtbEvento(this.getIdtbEvento() != null ? this.getIdtbEvento().toEntity() : null)
-                .idtbPersona(this.getIdtbPersona() != null ? this.getIdtbPersona().toEntity() : null)
+                .idtbEvento(this.getTbEvento() != null ? this.getTbEvento().toEntity() : null)
+                .idtbPersona(this.getTbPersona() != null ? this.getTbPersona().toEntity() : null)
                 .build();
     }
 }

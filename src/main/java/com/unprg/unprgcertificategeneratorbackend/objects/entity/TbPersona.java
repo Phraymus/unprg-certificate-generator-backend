@@ -1,9 +1,6 @@
 package com.unprg.unprgcertificategeneratorbackend.objects.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Builder
@@ -15,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 public class TbPersona {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idtb_persona", nullable = false)
     private Integer id;
 

@@ -14,6 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 public class TbCertificado {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idtb_certificado", nullable = false)
     private Integer id;
 

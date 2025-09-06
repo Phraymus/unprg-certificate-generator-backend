@@ -14,6 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 public class TbUsuario {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idtb_usuario", nullable = false)
     private Integer id;
 
@@ -23,7 +24,7 @@ public class TbUsuario {
     @Column(name = "clave", nullable = false, length = 45)
     private String clave;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "idtb_persona", nullable = false)
     private TbPersona idtbPersona;
 

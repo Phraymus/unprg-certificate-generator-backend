@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface TbParticipanteService extends GenericCrud<TbParticipanteDto, TbParticipanteIdDto> {
     List<TbParticipanteDto> findAll();
+
+    List<TbParticipanteDto> findAllByIdEvento(Integer k);
+
 }

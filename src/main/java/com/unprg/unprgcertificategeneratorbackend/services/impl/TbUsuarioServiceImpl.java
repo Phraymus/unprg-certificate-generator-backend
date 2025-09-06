@@ -1,5 +1,6 @@
 package com.unprg.unprgcertificategeneratorbackend.services.impl;
 
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbPersonaDto;
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbUsuarioDto;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbUsuario;
 import com.unprg.unprgcertificategeneratorbackend.repositories.TbUsuarioRepository;
@@ -26,6 +27,8 @@ public class TbUsuarioServiceImpl implements TbUsuarioService {
 
     @Override
     public TbUsuarioDto update(TbUsuarioDto tbUsuarioDto) {
+        Optional<TbUsuario> optionalTbUsuario = tbUsuarioRepository.findById(tbUsuarioDto.getId());
+        tbUsuarioDto.setClave(optionalTbUsuario.get().getClave());
         TbUsuario tbUsuario = tbUsuarioRepository.save(tbUsuarioDto.toEntity());
         return tbUsuarioDto.fromEntity(tbUsuario);
     }
@@ -43,7 +46,10 @@ public class TbUsuarioServiceImpl implements TbUsuarioService {
 
     @Override
     public List<TbUsuarioDto> findAll() {
+        TbUsuarioDto template = TbUsuarioDto.builder()
+                .defTbPersona(TbPersonaDto.build())
+                .build();
         List<TbUsuario> tbUsuarioList = tbUsuarioRepository.findAll();
-        return tbUsuarioList.stream().map(usuario -> TbUsuarioDto.build().fromEntity(usuario)).toList();
+        return tbUsuarioList.stream().map(template::fromEntity).toList();
     }
 }
