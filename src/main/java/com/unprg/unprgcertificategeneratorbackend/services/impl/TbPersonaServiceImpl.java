@@ -1,18 +1,13 @@
 package com.unprg.unprgcertificategeneratorbackend.services.impl;
 
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbPersonaDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbEvento;
-import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbParticipante;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbPersona;
-import com.unprg.unprgcertificategeneratorbackend.repositories.TbEventoRepository;
-import com.unprg.unprgcertificategeneratorbackend.repositories.TbParticipanteRepository;
 import com.unprg.unprgcertificategeneratorbackend.repositories.TbPersonaRepository;
 import com.unprg.unprgcertificategeneratorbackend.services.TbPersonaService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +17,6 @@ import java.util.Optional;
 public class TbPersonaServiceImpl implements TbPersonaService {
 
     private final TbPersonaRepository tbPersonaRepository;
-    private final TbParticipanteRepository tbParticipanteRepository;
 
 
     @Override
@@ -51,6 +45,12 @@ public class TbPersonaServiceImpl implements TbPersonaService {
     @Override
     public List<TbPersonaDto> findAll() {
         List<TbPersona> tbPersonaList = tbPersonaRepository.findAll();
+        return tbPersonaList.stream().map(persona -> TbPersonaDto.build().fromEntity(persona)).toList();
+    }
+
+    @Override
+    public List<TbPersonaDto> findAllByNombreOrDni(String search) {
+        List<TbPersona> tbPersonaList = tbPersonaRepository.findAllByNombresOrApellidoPaternoOrApellidoMaternoOrDniLike(search);
         return tbPersonaList.stream().map(persona -> TbPersonaDto.build().fromEntity(persona)).toList();
     }
 }

@@ -41,4 +41,10 @@ class TbPersonaController extends GenericController<TbPersonaDto, Integer> {
         List<TbPersonaDto> list = tbPersonaService.findAll();
         return ResponseEntity.ok(ApiResponse.ok("obtener Personas", list));
     }
+
+    @GetMapping(path = "/findAllByNombreOrDni/{search}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse> findAllByNombreOrDni(@PathVariable String search) {
+        List<TbPersonaDto> list = tbPersonaService.findAllByNombreOrDni(search);
+        return ResponseEntity.ok(ApiResponse.ok("obtener Personas por nombre o dni", list));
+    }
 }
