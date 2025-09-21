@@ -46,8 +46,12 @@ public class TbParticipanteServiceImpl implements TbParticipanteService {
 
     @Override
     public TbParticipanteDto findById(TbParticipanteIdDto id) {
+        TbParticipanteDto template = TbParticipanteDto.builder()
+                .defTbEvento(new TbEventoDto())
+                .defTbPersona(new TbPersonaDto())
+                .build();
         Optional<TbParticipante> tbParticipante = tbParticipanteRepository.findById(id.toEntity());
-        return tbParticipante.map(participante -> TbParticipanteDto.build().fromEntity(participante)).orElse(null);
+        return tbParticipante.map(participante -> TbParticipanteDto.build().fromEntity(template, participante)).orElse(null);
     }
 
     @Override

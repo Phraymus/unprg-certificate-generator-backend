@@ -49,7 +49,11 @@ public class TbEventoFormatoCertificadoServiceImpl implements TbEventoFormatoCer
 
     @Override
     public List<TbEventoFormatoCertificadoDto> findAll() {
+        TbEventoFormatoCertificadoDto template = TbEventoFormatoCertificadoDto.builder()
+                .defTbEvento(new TbEventoDto())
+                .defIdtbFormatoCertificado(new TbFormatoCertificadoDto())
+                .build();
         List<TbEventoFormatoCertificado> tbEventoFormatoCertificadoList = tbEventoFormatoCertificadoRepository.findAll();
-        return tbEventoFormatoCertificadoList.stream().map(eventoFormatoCertificado -> TbEventoFormatoCertificadoDto.build().fromEntity(eventoFormatoCertificado)).toList();
+        return tbEventoFormatoCertificadoList.stream().map(eventoFormatoCertificado -> TbEventoFormatoCertificadoDto.build().fromEntity(template, eventoFormatoCertificado)).toList();
     }
 }
