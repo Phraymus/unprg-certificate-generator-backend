@@ -25,6 +25,12 @@ public class TbFirma {
     @Column(name = "estado", nullable = false, length = 1)
     private String estado;
 
+    @Column(name = "cargo", nullable = false, length = 1)
+    private String cargo;
+
+    @Column(name = "entidad", nullable = false, length = 1)
+    private String entidad;
+
     @Lob
     @Column(name = "imagen", columnDefinition = "LONGBLOB")
     private byte[] imagen;

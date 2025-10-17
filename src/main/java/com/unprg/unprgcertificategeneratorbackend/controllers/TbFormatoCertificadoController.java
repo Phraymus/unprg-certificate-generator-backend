@@ -99,7 +99,7 @@ class TbFormatoCertificadoController extends GenericController<TbFormatoCertific
                     .codigo(codigo)
                     .nombreFormato(nombreFormato)
                     .rutaFormato(UPLOAD_DIR + uniqueFilename)
-                    .idtbUsuario(TbUsuarioDto.builder().id(idtbUsuario).build())
+                    .tbUsuario(TbUsuarioDto.builder().id(idtbUsuario).build())
                     .build();
 
             // Guardar en base de datos
@@ -175,7 +175,7 @@ class TbFormatoCertificadoController extends GenericController<TbFormatoCertific
                     .codigo(codigo)
                     .nombreFormato(nombreFormato)
                     .rutaFormato(rutaFormato)
-                    .idtbUsuario(TbUsuarioDto.builder().id(idtbUsuario).build())
+                    .tbUsuario(TbUsuarioDto.builder().id(idtbUsuario).build())
                     .build();
 
             // Actualizar en base de datos

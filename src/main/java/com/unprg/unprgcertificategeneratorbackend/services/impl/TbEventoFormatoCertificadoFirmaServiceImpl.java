@@ -1,7 +1,9 @@
 package com.unprg.unprgcertificategeneratorbackend.services.impl;
 
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoFormatoCertificadoDto;
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoFormatoCertificadoFirmaDto;
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoFormatoCertificadoFirmaIdDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbFirmaDto;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbEventoFormatoCertificadoFirma;
 import com.unprg.unprgcertificategeneratorbackend.repositories.TbEventoFormatoCertificadoFirmaRepository;
 import com.unprg.unprgcertificategeneratorbackend.services.TbEventoFormatoCertificadoFirmaService;
@@ -21,6 +23,7 @@ public class TbEventoFormatoCertificadoFirmaServiceImpl implements TbEventoForma
 
     @Override
     public TbEventoFormatoCertificadoFirmaDto insert(TbEventoFormatoCertificadoFirmaDto tbEventoFormatoCertificadoFirmaDto) {
+//        tbEventoFormatoCertificadoFirmaRepository.deleteAllByTbEventoFormatoCertificadoIdtbEvento(tbEventoFormatoCertificadoFirmaDto.getTbEventoFormatoCertificadoIdtbEvento().toEntity());
         TbEventoFormatoCertificadoFirma tbEventoFormatoCertificadoFirma = tbEventoFormatoCertificadoFirmaRepository.save(tbEventoFormatoCertificadoFirmaDto.toEntity());
         return tbEventoFormatoCertificadoFirmaDto.fromEntity(tbEventoFormatoCertificadoFirma);
     }
@@ -46,5 +49,15 @@ public class TbEventoFormatoCertificadoFirmaServiceImpl implements TbEventoForma
     public List<TbEventoFormatoCertificadoFirmaDto> findAll() {
         List<TbEventoFormatoCertificadoFirma> tbEventoFormatoCertificadoFirmaList = tbEventoFormatoCertificadoFirmaRepository.findAll();
         return tbEventoFormatoCertificadoFirmaList.stream().map(eventoFormatoCertificadoFirma -> TbEventoFormatoCertificadoFirmaDto.build().fromEntity(eventoFormatoCertificadoFirma)).toList();
+    }
+
+    @Override
+    public List<TbEventoFormatoCertificadoFirmaDto> findAllByIdTbEventoCertificado(Integer idTbEventoFormatoCertificado) {
+        TbEventoFormatoCertificadoFirmaDto template = TbEventoFormatoCertificadoFirmaDto.builder()
+                .defTbEventoFormatoCertificadoIdtbEvento(new TbEventoFormatoCertificadoDto())
+                .defIdtbFirma(new TbFirmaDto())
+                .build();
+        List<TbEventoFormatoCertificadoFirma> tbEventoFormatoCertificadoFirmaList = tbEventoFormatoCertificadoFirmaRepository.findAllByTbEventoFormatoCertificadoIdtbEventoId(idTbEventoFormatoCertificado);
+        return tbEventoFormatoCertificadoFirmaList.stream().map(eventoFormatoCertificadoFirma -> TbEventoFormatoCertificadoFirmaDto.build().fromEntity(template, eventoFormatoCertificadoFirma)).toList();
     }
 }

@@ -1,9 +1,7 @@
 package com.unprg.unprgcertificategeneratorbackend.services;
 
 import com.itextpdf.html2pdf.HtmlConverter;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoFormatoCertificadoDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbFormatoCertificadoDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbParticipanteDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.*;
 import com.unprg.unprgcertificategeneratorbackend.services.TbEventoFormatoCertificadoService;
 import com.unprg.unprgcertificategeneratorbackend.services.TbFormatoCertificadoService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +28,7 @@ public class CertificateGenerationService {
 
     private final TbEventoFormatoCertificadoService tbEventoFormatoCertificadoService;
     private final TbFormatoCertificadoService tbFormatoCertificadoService;
+    private final TbEventoFormatoCertificadoFirmaService tbEventoFormatoCertificadoFirmaService;
 
     @Value("${app.upload.dir:./uploads}")
     private String uploadDir;
@@ -61,10 +60,8 @@ public class CertificateGenerationService {
 
         // Verificar si la ruta ya incluye el directorio base
         if (rutaCompleta.startsWith("uploads/") || rutaCompleta.startsWith("uploads\\")) {
-            // La ruta ya incluye uploads, usar directamente
             templatePath = Paths.get(rutaCompleta);
         } else {
-            // La ruta no incluye uploads, agregarlo
             templatePath = Paths.get(uploadDir, rutaCompleta);
         }
 
@@ -133,40 +130,32 @@ public class CertificateGenerationService {
         data.put("fecha_actual", formatDate(LocalDate.now()));
         data.put("fecha_inscripcion", participante.getFechaInscripcion());
 
+        // Obtener firmas relacionadas al evento
+        List<TbEventoFormatoCertificadoFirmaDto> firmasEvento =
+                tbEventoFormatoCertificadoFirmaService.findAllByIdTbEventoCertificado(participante.getTbEvento().getId());
+
+        List<TbFirmaDto> firmasDto = firmasEvento.stream()
+                .map(TbEventoFormatoCertificadoFirmaDto::getIdtbFirma)
+                .toList();
+
+        firmasDto.forEach(firmaDto -> {
+            String codigoLower = firmaDto.getCodigo().toLowerCase();
+
+            // Guardar el nombre de la firma
+            data.put(codigoLower + ".nombre", firmaDto.getNombre());
+
+            // Guardar la imagen de la firma (byte array)
+            if (firmaDto.getImagen() != null && firmaDto.getImagen().length > 0) {
+                data.put(codigoLower + ".imagen", firmaDto.getImagen());
+                log.info("Imagen de firma agregada: {} ({} bytes)",
+                        firmaDto.getCodigo(), firmaDto.getImagen().length);
+            } else {
+                log.warn("Firma {} no tiene imagen", firmaDto.getCodigo());
+            }
+        });
+
         log.info("Datos del certificado creados: {}", data);
         return data;
-    }
-
-    private byte[] processTemplateAndGeneratePDF(Path templatePath, Map<String, Object> data) throws Exception {
-        String tempFileName = "certificate_" + UUID.randomUUID().toString();
-        Path tempDocxPath = Paths.get(tempDir, tempFileName + ".docx");
-        Path tempHtmlPath = Paths.get(tempDir, tempFileName + ".html");
-
-        try {
-            // Crear directorio temporal si no existe
-            Files.createDirectories(Paths.get(tempDir));
-
-            // 1. Procesar el template Word con los datos
-            processWordTemplate(templatePath, tempDocxPath, data);
-
-            // 2. Convertir Word a HTML
-            String htmlContent = convertWordToHTML(tempDocxPath);
-
-            // 3. Guardar HTML temporal
-            Files.write(tempHtmlPath, htmlContent.getBytes());
-
-            // 4. Convertir HTML a PDF
-            return convertHTMLToPDF(htmlContent);
-
-        } finally {
-            // Limpiar archivos temporales
-            try {
-                Files.deleteIfExists(tempDocxPath);
-                Files.deleteIfExists(tempHtmlPath);
-            } catch (Exception e) {
-                log.warn("No se pudieron eliminar archivos temporales", e);
-            }
-        }
     }
 
     private void processWordTemplate(Path templatePath, Path outputPath, Map<String, Object> data) throws IOException {
@@ -179,7 +168,7 @@ public class CertificateGenerationService {
             log.info("Headers: {}", document.getHeaderList().size());
             log.info("Footers: {}", document.getFooterList().size());
 
-            // Inspeccionar párrafos del body
+            // Procesar párrafos del body
             for (int i = 0; i < document.getParagraphs().size(); i++) {
                 XWPFParagraph paragraph = document.getParagraphs().get(i);
                 log.info("--- Párrafo {} ---", i);
@@ -187,7 +176,7 @@ public class CertificateGenerationService {
                 replaceInParagraph(paragraph, data);
             }
 
-            // Inspeccionar tablas
+            // Procesar tablas
             for (int t = 0; t < document.getTables().size(); t++) {
                 XWPFTable table = document.getTables().get(t);
                 log.info("--- Tabla {} ---", t);
@@ -203,11 +192,7 @@ public class CertificateGenerationService {
                 }
             }
 
-            // PROCESAR CUADROS DE TEXTO Y FORMAS
-            log.info("=== PROCESANDO CUADROS DE TEXTO ===");
-            processTextBoxes(document, data);
-
-            // Inspeccionar headers
+            // Procesar headers
             for (int h = 0; h < document.getHeaderList().size(); h++) {
                 XWPFHeader header = document.getHeaderList().get(h);
                 log.info("--- Header {} ---", h);
@@ -216,11 +201,19 @@ public class CertificateGenerationService {
                     log.info("  Header párrafo {}: '{}'", p, paragraph.getText());
                     replaceInParagraph(paragraph, data);
                 }
-                // Procesar cuadros de texto en headers
-                processTextBoxesInHeader(header, data);
+                // Procesar tablas en headers
+                for (XWPFTable table : header.getTables()) {
+                    for (XWPFTableRow row : table.getRows()) {
+                        for (XWPFTableCell cell : row.getTableCells()) {
+                            for (XWPFParagraph paragraph : cell.getParagraphs()) {
+                                replaceInParagraph(paragraph, data);
+                            }
+                        }
+                    }
+                }
             }
 
-            // Inspeccionar footers
+            // Procesar footers
             for (int f = 0; f < document.getFooterList().size(); f++) {
                 XWPFFooter footer = document.getFooterList().get(f);
                 log.info("--- Footer {} ---", f);
@@ -229,8 +222,16 @@ public class CertificateGenerationService {
                     log.info("  Footer párrafo {}: '{}'", p, paragraph.getText());
                     replaceInParagraph(paragraph, data);
                 }
-                // Procesar cuadros de texto en footers
-                processTextBoxesInFooter(footer, data);
+                // Procesar tablas en footers
+                for (XWPFTable table : footer.getTables()) {
+                    for (XWPFTableRow row : table.getRows()) {
+                        for (XWPFTableCell cell : row.getTableCells()) {
+                            for (XWPFParagraph paragraph : cell.getParagraphs()) {
+                                replaceInParagraph(paragraph, data);
+                            }
+                        }
+                    }
+                }
             }
 
             // Guardar documento procesado
@@ -238,177 +239,6 @@ public class CertificateGenerationService {
                 document.write(fos);
                 log.info("Documento Word procesado guardado en: {}", outputPath);
             }
-        }
-    }
-
-    private void processTextBoxes(XWPFDocument document, Map<String, Object> data) {
-        try {
-            // Buscar en todos los párrafos que contengan elementos de dibujo
-            for (XWPFParagraph paragraph : document.getParagraphs()) {
-                processTextBoxesInParagraph(paragraph, data);
-            }
-        } catch (Exception e) {
-            log.warn("Error procesando cuadros de texto: {}", e.getMessage());
-        }
-    }
-
-    private void processTextBoxesInParagraph(XWPFParagraph paragraph, Map<String, Object> data) {
-        try {
-            for (XWPFRun run : paragraph.getRuns()) {
-                // Buscar elementos de dibujo en el run
-                if (run.getCTR().getDrawingArray() != null && run.getCTR().getDrawingArray().length > 0) {
-                    log.info("Encontrado elemento de dibujo en párrafo");
-
-                    // Obtener el XML del run completo como string
-                    String runXML = run.getCTR().toString();
-                    log.info("XML original del run: {}", runXML.substring(0, Math.min(500, runXML.length())));
-
-                    // Crear una copia del XML para modificar
-                    String modifiedXML = runXML;
-                    boolean wasModified = false;
-
-                    // Buscar y reemplazar marcadores en el XML
-                    for (Map.Entry<String, Object> entry : data.entrySet()) {
-                        String placeholder = entry.getKey();
-                        String value = entry.getValue() != null ? entry.getValue().toString() : "";
-
-                        // Buscar el patrón <w:t>placeholder</w:t>
-                        String pattern = "<w:t>" + placeholder + "</w:t>";
-                        String replacement = "<w:t>" + value + "</w:t>";
-
-                        if (modifiedXML.contains(pattern)) {
-                            log.info("¡ENCONTRADO Y REEMPLAZANDO! '{}' -> '{}'", placeholder, value);
-                            modifiedXML = modifiedXML.replace(pattern, replacement);
-                            wasModified = true;
-                        } else {
-                            // También buscar variaciones con espacios o case insensitive
-                            String patternLower = "<w:t>" + placeholder.toLowerCase() + "</w:t>";
-                            String originalPattern = "<w:t>" + placeholder.toLowerCase() + "</w:t>";
-
-                            if (modifiedXML.toLowerCase().contains(patternLower)) {
-                                log.info("¡ENCONTRADO VARIACIÓN! Reemplazando versión en minúsculas");
-                                // Buscar el patrón original exacto en el XML
-                                String exactPattern = findExactPattern(modifiedXML, placeholder.toLowerCase());
-                                if (exactPattern != null) {
-                                    String exactReplacement = exactPattern.replace(placeholder.toLowerCase(), value);
-                                    modifiedXML = modifiedXML.replace(exactPattern, exactReplacement);
-                                    wasModified = true;
-                                }
-                            }
-                        }
-                    }
-
-                    if (wasModified) {
-                        log.info("XML fue modificado. Intentando actualizar el run...");
-                        log.info("XML modificado: {}", modifiedXML.substring(0, Math.min(500, modifiedXML.length())));
-
-                        // ESTRATEGIA ALTERNATIVA: Como no podemos modificar el XML directamente,
-                        // vamos a recrear todo el párrafo
-                        replaceTextInXMLDirectly(paragraph, data);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.warn("Error procesando cuadros de texto en párrafo: {}", e.getMessage());
-        }
-    }
-
-    private String findExactPattern(String xml, String placeholder) {
-        // Buscar el patrón exacto <w:t>texto</w:t> en el XML
-        String lowerXML = xml.toLowerCase();
-        String searchPattern = "<w:t>" + placeholder + "</w:t>";
-
-        int index = lowerXML.indexOf(searchPattern);
-        if (index >= 0) {
-            // Extraer el texto exacto del XML original (con el case correcto)
-            return xml.substring(index, index + searchPattern.length());
-        }
-        return null;
-    }
-
-    private void replaceTextInXMLDirectly(XWPFParagraph paragraph, Map<String, Object> data) {
-        try {
-            // Obtener el documento padre
-            XWPFDocument document = paragraph.getDocument();
-
-            // ESTRATEGIA: Reemplazar a nivel de documento completo usando string replacement
-            // Esto es menos elegante pero más efectivo para cuadros de texto
-
-            log.info("Aplicando estrategia de reemplazo directo en documento...");
-
-            // Esta función será llamada después de procesar todo el documento
-            // y aplicaremos los reemplazos a nivel global
-
-        } catch (Exception e) {
-            log.error("Error en reemplazo directo de XML: {}", e.getMessage());
-        }
-    }
-
-    // Nuevo método para reemplazo a nivel de documento completo
-    private void applyGlobalTextReplacement(XWPFDocument document, Map<String, Object> data) {
-        try {
-            // Esta es una aproximación más directa - buscar y reemplazar en todo el documento
-            // usando reflexión para acceder al XML subyacente
-
-            log.info("=== APLICANDO REEMPLAZO GLOBAL ===");
-
-            // Obtener el XML del documento como string
-            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-            document.write(out);
-            String documentXML = new String(out.toByteArray(), "UTF-8");
-
-            log.info("Tamaño del documento XML: {} caracteres", documentXML.length());
-
-            // Aplicar reemplazos
-            String modifiedXML = documentXML;
-            for (Map.Entry<String, Object> entry : data.entrySet()) {
-                String placeholder = entry.getKey();
-                String value = entry.getValue() != null ? entry.getValue().toString() : "";
-
-                // Reemplazar tanto mayúsculas como minúsculas
-                String pattern1 = "<w:t>" + placeholder + "</w:t>";
-                String pattern2 = "<w:t>" + placeholder.toLowerCase() + "</w:t>";
-                String replacement = "<w:t>" + value + "</w:t>";
-
-                if (modifiedXML.contains(pattern1)) {
-                    log.info("Reemplazando patrón exacto: {}", placeholder);
-                    modifiedXML = modifiedXML.replace(pattern1, replacement);
-                }
-
-                if (modifiedXML.contains(pattern2)) {
-                    log.info("Reemplazando patrón en minúsculas: {}", placeholder.toLowerCase());
-                    modifiedXML = modifiedXML.replace(pattern2, replacement);
-                }
-            }
-
-            // Guardar el documento modificado de vuelta
-            java.io.ByteArrayInputStream in = new java.io.ByteArrayInputStream(modifiedXML.getBytes("UTF-8"));
-            // Aquí necesitaríamos recrear el documento, pero esto es complejo
-
-            log.info("Reemplazo global completado");
-
-        } catch (Exception e) {
-            log.error("Error en reemplazo global: {}", e.getMessage());
-        }
-    }
-
-    private void processTextBoxesInHeader(XWPFHeader header, Map<String, Object> data) {
-        try {
-            for (XWPFParagraph paragraph : header.getParagraphs()) {
-                processTextBoxesInParagraph(paragraph, data);
-            }
-        } catch (Exception e) {
-            log.warn("Error procesando cuadros de texto en header: {}", e.getMessage());
-        }
-    }
-
-    private void processTextBoxesInFooter(XWPFFooter footer, Map<String, Object> data) {
-        try {
-            for (XWPFParagraph paragraph : footer.getParagraphs()) {
-                processTextBoxesInParagraph(paragraph, data);
-            }
-        } catch (Exception e) {
-            log.warn("Error procesando cuadros de texto en footer: {}", e.getMessage());
         }
     }
 
@@ -429,19 +259,37 @@ public class CertificateGenerationService {
         if (paragraphText != null && !paragraphText.trim().isEmpty()) {
             for (Map.Entry<String, Object> entry : data.entrySet()) {
                 String placeholder = entry.getKey();
-                String value = entry.getValue() != null ? entry.getValue().toString() : "";
+                Object value = entry.getValue();
 
-                log.debug("Buscando placeholder: '{}' en texto: '{}'", placeholder, paragraphText);
+                log.debug("Procesando entrada: '{}' = '{}'", placeholder, value);
 
-                // Buscar marcadores en formato {placeholder} o placeholder directamente
-                if (paragraphText.contains(placeholder)) {
-                    log.info("¡ENCONTRADO! Reemplazando '{}' con '{}'", placeholder, value);
-                    replaceTextInParagraph(paragraph, placeholder, value);
-                } else if (paragraphText.contains("{" + placeholder + "}")) {
-                    log.info("¡ENCONTRADO CON LLAVES! Reemplazando '{}' con '{}'", "{" + placeholder + "}", value);
-                    replaceTextInParagraph(paragraph, "{" + placeholder + "}", value);
-                } else {
-                    log.debug("No se encontró '{}' en el párrafo", placeholder);
+                // Verificar si es una imagen (placeholder termina en .imagen)
+                if (placeholder.endsWith(".imagen") && value instanceof byte[]) {
+                    String imagePlaceholder = placeholder;
+
+                    log.debug("Es una imagen. Buscando placeholder: '{}'", imagePlaceholder);
+
+                    if (paragraphText.contains(imagePlaceholder)) {
+                        log.info("¡ENCONTRADO PLACEHOLDER DE IMAGEN! Insertando imagen para '{}'", imagePlaceholder);
+                        replaceWithImage(paragraph, imagePlaceholder, (byte[]) value);
+                    } else if (paragraphText.contains("{" + imagePlaceholder + "}")) {
+                        log.info("¡ENCONTRADO PLACEHOLDER DE IMAGEN CON LLAVES! Insertando imagen para '{}'", "{" + imagePlaceholder + "}");
+                        replaceWithImage(paragraph, "{" + imagePlaceholder + "}", (byte[]) value);
+                    }
+                }
+                // Manejo de texto normal
+                else if (value instanceof String) {
+                    String stringValue = (String) value;
+
+                    if (paragraphText.contains(placeholder)) {
+                        log.info("¡ENCONTRADO! Reemplazando '{}' con '{}'", placeholder, stringValue);
+                        replaceTextInParagraph(paragraph, placeholder, stringValue);
+                    } else if (paragraphText.contains("{" + placeholder + "}")) {
+                        log.info("¡ENCONTRADO CON LLAVES! Reemplazando '{}' con '{}'", "{" + placeholder + "}", stringValue);
+                        replaceTextInParagraph(paragraph, "{" + placeholder + "}", stringValue);
+                    } else {
+                        log.debug("No se encontró '{}' en el párrafo", placeholder);
+                    }
                 }
             }
 
@@ -463,74 +311,60 @@ public class CertificateGenerationService {
             if (runText != null && runText.contains(placeholder)) {
                 runText = runText.replace(placeholder, replacement);
                 run.setText(runText, 0);
+                log.debug("Texto reemplazado en run {}: '{}'", i, runText);
             }
         }
     }
 
-    private String convertWordToHTML(Path docxPath) throws Exception {
-        // Conversión básica de Word a HTML usando POI
-        try (FileInputStream fis = new FileInputStream(docxPath.toFile());
-             XWPFDocument document = new XWPFDocument(fis)) {
+    private void replaceWithImage(XWPFParagraph paragraph, String placeholder, byte[] imageData) {
+        try {
+            List<XWPFRun> runs = paragraph.getRuns();
 
-            StringBuilder htmlBuilder = new StringBuilder();
-            htmlBuilder.append("<!DOCTYPE html>");
-            htmlBuilder.append("<html><head>");
-            htmlBuilder.append("<meta charset='UTF-8'>");
-            htmlBuilder.append("<style>");
-            htmlBuilder.append("body { font-family: Arial, sans-serif; margin: 40px; padding: 20px; }");
-            htmlBuilder.append("p { margin: 10px 0; line-height: 1.5; }");
-            htmlBuilder.append("table { border-collapse: collapse; width: 100%; margin: 20px 0; }");
-            htmlBuilder.append("td, th { border: 1px solid #ddd; padding: 8px; text-align: left; }");
-            htmlBuilder.append("h1, h2, h3 { color: #333; margin: 20px 0 10px 0; }");
-            htmlBuilder.append("</style>");
-            htmlBuilder.append("</head><body>");
+            log.info("Buscando placeholder '{}' en {} runs", placeholder, runs.size());
 
-            log.info("Convirtiendo documento Word a HTML...");
+            for (int i = 0; i < runs.size(); i++) {
+                XWPFRun run = runs.get(i);
+                String runText = run.getText(0);
 
-            // Procesar párrafos
-            int paragraphCount = 0;
-            for (XWPFParagraph paragraph : document.getParagraphs()) {
-                String paragraphText = paragraph.getText();
-                if (paragraphText != null && !paragraphText.trim().isEmpty()) {
-                    htmlBuilder.append("<p>").append(paragraphText).append("</p>");
-                    paragraphCount++;
-                    log.debug("Párrafo {} agregado al HTML: {}", paragraphCount, paragraphText);
-                }
-            }
+                log.debug("Run {}: '{}'", i, runText);
 
-            // Procesar tablas
-            int tableCount = 0;
-            for (XWPFTable table : document.getTables()) {
-                htmlBuilder.append("<table>");
-                tableCount++;
-                log.debug("Procesando tabla {}", tableCount);
+                if (runText != null && runText.contains(placeholder)) {
+                    log.info("¡Placeholder encontrado en run {}! Reemplazando con imagen", i);
 
-                for (XWPFTableRow row : table.getRows()) {
-                    htmlBuilder.append("<tr>");
-                    for (XWPFTableCell cell : row.getTableCells()) {
-                        String cellText = cell.getText();
-                        htmlBuilder.append("<td>").append(cellText != null ? cellText : "").append("</td>");
+                    // Eliminar el texto del placeholder
+                    run.setText("", 0);
+
+                    try (ByteArrayInputStream bis = new ByteArrayInputStream(imageData)) {
+                        int pictureType = XWPFDocument.PICTURE_TYPE_PNG;
+                        String fileName = "firma_" + System.currentTimeMillis() + ".png";
+
+                        if (imageData.length > 2) {
+                            if (imageData[0] == (byte) 0xFF && imageData[1] == (byte) 0xD8) {
+                                pictureType = XWPFDocument.PICTURE_TYPE_JPEG;
+                                fileName = "firma_" + System.currentTimeMillis() + ".jpg";
+                            }
+                        }
+
+                        int width = 200;
+                        int height = 100;
+                        int widthEMU = width * 9525;
+                        int heightEMU = height * 9525;
+
+                        // Insertar imagen inline simple
+                        run.addPicture(bis, pictureType, fileName, widthEMU, heightEMU);
+
+                        log.info("✓ Imagen inline insertada: {} bytes", imageData.length);
+
+                    } catch (Exception e) {
+                        log.error("✗ Error al insertar imagen: {}", e.getMessage(), e);
                     }
-                    htmlBuilder.append("</tr>");
+
+                    break;
                 }
-                htmlBuilder.append("</table>");
             }
-
-            htmlBuilder.append("</body></html>");
-
-            String finalHTML = htmlBuilder.toString();
-            log.info("HTML generado con {} párrafos y {} tablas. Longitud: {} caracteres",
-                    paragraphCount, tableCount, finalHTML.length());
-            log.debug("HTML final: {}", finalHTML);
-
-            return finalHTML;
+        } catch (Exception e) {
+            log.error("✗ Error general al reemplazar con imagen: {}", e.getMessage(), e);
         }
-    }
-
-    private byte[] convertHTMLToPDF(String htmlContent) throws Exception {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        HtmlConverter.convertToPdf(htmlContent, outputStream);
-        return outputStream.toByteArray();
     }
 
     private String formatDate(LocalDate date) {

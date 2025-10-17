@@ -25,6 +25,8 @@ public class TbFirmaDto implements Serializable {
     private String codigo;
     private String nombre;
     private String estado;
+    private String cargo;
+    private String entidad;
     private byte[] imagen;
 
     public static TbFirmaDto build() {
@@ -38,6 +40,8 @@ public class TbFirmaDto implements Serializable {
                     .codigo(entity.getCodigo())
                     .nombre(entity.getNombre())
                     .estado(entity.getEstado())
+                    .cargo(entity.getCargo())
+                    .entidad(entity.getEntidad())
                     .imagen(entity.getImagen())
                     .build();
         } else {
@@ -52,6 +56,8 @@ public class TbFirmaDto implements Serializable {
                     .codigo(entity.getCodigo())
                     .nombre(entity.getNombre())
                     .estado(entity.getEstado())
+                    .cargo(entity.getCargo())
+                    .entidad(entity.getEntidad())
                     .imagen(entity.getImagen())
                     .build();
         } else {
@@ -69,6 +75,8 @@ public class TbFirmaDto implements Serializable {
                 .codigo(this.getCodigo())
                 .nombre(this.getNombre())
                 .estado(this.getEstado())
+                .cargo(this.getCargo())
+                .entidad(this.getEntidad())
                 .imagen(this.getImagen())
                 .build();
     }

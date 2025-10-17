@@ -179,6 +179,13 @@
             <version>5.2.4</version>
         </dependency>
 
+        <!-- Apache POI completo con los esquemas XML (para CTAnchor, CTInline, etc.) -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-full</artifactId>
+            <version>5.2.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>

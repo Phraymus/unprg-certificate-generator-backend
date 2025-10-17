@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface TbEventoFormatoCertificadoFirmaService extends GenericCrud<TbEventoFormatoCertificadoFirmaDto, TbEventoFormatoCertificadoFirmaIdDto> {
     List<TbEventoFormatoCertificadoFirmaDto> findAll();
+
+    List<TbEventoFormatoCertificadoFirmaDto> findAllByIdTbEventoCertificado(Integer idTbEvento);
+
 }

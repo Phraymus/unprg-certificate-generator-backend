@@ -26,7 +26,7 @@ public class TbFormatoCertificadoDto implements Serializable {
     private String codigo;
     private String nombreFormato;
     private String rutaFormato;
-    private TbUsuarioDto idtbUsuario;
+    private TbUsuarioDto tbUsuario;
 
     @JsonIgnore
     @Builder.Default
@@ -46,7 +46,7 @@ public class TbFormatoCertificadoDto implements Serializable {
                     .build();
 
             if (template.getDefIdtbUsuario() != null) {
-                dto.setIdtbUsuario(TbUsuarioDto.build().fromEntity(template.getDefIdtbUsuario(), entity.getIdtbUsuario()));
+                dto.setTbUsuario(TbUsuarioDto.build().fromEntity(template.getDefIdtbUsuario(), entity.getIdtbUsuario()));
                 dto.setDefIdtbUsuario(template.getDefIdtbUsuario());
             }
             return dto;
@@ -65,7 +65,7 @@ public class TbFormatoCertificadoDto implements Serializable {
                     .build();
 
             if (template.getDefIdtbUsuario() != null) {
-                dto.setIdtbUsuario(TbUsuarioDto.build().fromProxy(template.getDefIdtbUsuario(), entity.getIdtbUsuario()));
+                dto.setTbUsuario(TbUsuarioDto.build().fromProxy(template.getDefIdtbUsuario(), entity.getTbUsuario()));
                 dto.setDefIdtbUsuario(template.getDefIdtbUsuario());
             }
             return dto;
@@ -84,7 +84,7 @@ public class TbFormatoCertificadoDto implements Serializable {
                 .codigo(this.getCodigo())
                 .nombreFormato(this.getNombreFormato())
                 .rutaFormato(this.getRutaFormato())
-                .idtbUsuario(this.getIdtbUsuario() != null ? this.getIdtbUsuario().toEntity() : null)
+                .idtbUsuario(this.getTbUsuario() != null ? this.getTbUsuario().toEntity() : null)
                 .build();
     }
 }

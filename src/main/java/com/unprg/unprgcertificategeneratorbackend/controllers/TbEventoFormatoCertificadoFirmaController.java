@@ -47,4 +47,12 @@ class TbEventoFormatoCertificadoFirmaController extends GenericController<TbEven
         List<TbEventoFormatoCertificadoFirmaDto> list = tbEventoFormatoCertificadoFirmaService.findAll();
         return ResponseEntity.ok(ApiResponse.ok("obtener Eventos Formato Certificado Firmas", list));
     }
+
+    @GetMapping(path = "/findByEventoFormato/{idTbEventoFormatoCertificado}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse> findAllByIdTbEvento(
+            @PathVariable("idTbEventoFormatoCertificado") Integer idTbEventoFormatoCertificado) {
+        List<TbEventoFormatoCertificadoFirmaDto> list =
+                tbEventoFormatoCertificadoFirmaService.findAllByIdTbEventoCertificado(idTbEventoFormatoCertificado);
+        return ResponseEntity.ok(ApiResponse.ok("obtener Eventos Formato Certificado Firmas por idTbEvento", list));
+    }
 }

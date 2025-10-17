@@ -1,6 +1,8 @@
 package com.unprg.unprgcertificategeneratorbackend.services.impl;
 
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbFormatoCertificadoDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbPersonaDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbUsuarioDto;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbFormatoCertificado;
 import com.unprg.unprgcertificategeneratorbackend.repositories.TbFormatoCertificadoRepository;
 import com.unprg.unprgcertificategeneratorbackend.services.TbFormatoCertificadoService;
@@ -37,13 +39,23 @@ public class TbFormatoCertificadoServiceImpl implements TbFormatoCertificadoServ
 
     @Override
     public TbFormatoCertificadoDto findById(Integer integer) {
+        TbFormatoCertificadoDto template = TbFormatoCertificadoDto.builder()
+                .defIdtbUsuario(TbUsuarioDto.builder()
+                        .defTbPersona(new TbPersonaDto())
+                        .build())
+                .build();
         Optional<TbFormatoCertificado> tbFormatoCertificado = tbFormatoCertificadoRepository.findById(integer);
-        return tbFormatoCertificado.map(formatoCertificado -> TbFormatoCertificadoDto.build().fromEntity(formatoCertificado)).orElse(null);
+        return tbFormatoCertificado.map(formatoCertificado -> TbFormatoCertificadoDto.build().fromEntity(template, formatoCertificado)).orElse(null);
     }
 
     @Override
     public List<TbFormatoCertificadoDto> findAll() {
+        TbFormatoCertificadoDto template = TbFormatoCertificadoDto.builder()
+                .defIdtbUsuario(TbUsuarioDto.builder()
+                        .defTbPersona(new TbPersonaDto())
+                        .build())
+                .build();
         List<TbFormatoCertificado> tbFormatoCertificadoList = tbFormatoCertificadoRepository.findAll();
-        return tbFormatoCertificadoList.stream().map(formatoCertificado -> TbFormatoCertificadoDto.build().fromEntity(formatoCertificado)).toList();
+        return tbFormatoCertificadoList.stream().map(formatoCertificado -> TbFormatoCertificadoDto.build().fromEntity(template, formatoCertificado)).toList();
     }
 }
