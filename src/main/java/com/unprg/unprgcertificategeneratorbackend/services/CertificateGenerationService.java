@@ -143,6 +143,8 @@ public class CertificateGenerationService {
 
             // Guardar el nombre de la firma
             data.put(codigoLower + ".nombre", firmaDto.getNombre());
+            data.put(codigoLower + ".cargo", firmaDto.getCargo());
+            data.put(codigoLower + ".entidad", firmaDto.getEntidad());
 
             // Guardar la imagen de la firma (byte array)
             if (firmaDto.getImagen() != null && firmaDto.getImagen().length > 0) {

@@ -25,10 +25,10 @@ public class TbFirma {
     @Column(name = "estado", nullable = false, length = 1)
     private String estado;
 
-    @Column(name = "cargo", nullable = false, length = 1)
+    @Column(name = "cargo")
     private String cargo;
 
-    @Column(name = "entidad", nullable = false, length = 1)
+    @Column(name = "entidad")
     private String entidad;
 
     @Lob
