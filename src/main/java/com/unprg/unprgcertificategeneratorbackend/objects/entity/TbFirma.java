@@ -22,4 +22,10 @@ public class TbFirma {
     @Column(name = "nombre", nullable = false, length = 45)
     private String nombre;
 
+    @Column(name = "estado", nullable = false, length = 1)
+    private String estado;
+
+    @Lob
+    @Column(name = "imagen", columnDefinition = "LONGBLOB")
+    private byte[] imagen;
 }
