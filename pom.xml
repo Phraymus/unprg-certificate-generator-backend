@@ -172,18 +172,92 @@
             <version>1.16.1</version>
         </dependency>
 
-        <!-- Para convertir Word a HTML más fácilmente -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-            <version>5.2.4</version>
-        </dependency>
-
         <!-- Apache POI completo con los esquemas XML (para CTAnchor, CTInline, etc.) -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-full</artifactId>
             <version>5.2.4</version>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- DEPENDENCIAS PARA CONVERSIÓN WORD A PDF   -->
+        <!-- ========================================== -->
+
+        <!-- OPCIÓN 1: XDocReport (ACTUAL - TIENE PROBLEMAS DE DESCUADRE) -->
+        <!-- Puedes comentar/eliminar estas si vas a usar Docx4j o LibreOffice -->
+        <dependency>
+            <groupId>fr.opensagres.xdocreport</groupId>
+            <artifactId>fr.opensagres.poi.xwpf.converter.pdf</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>fr.opensagres.xdocreport</groupId>
+            <artifactId>fr.opensagres.poi.xwpf.converter.core</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+
+        <!-- Apache PDFBox (usado por XDocReport) -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.30</version>
+        </dependency>
+
+        <!-- OPCIÓN 2: Docx4j (MEJOR FIDELIDAD QUE XDOCREPORT) -->
+        <!-- Descomenta estas dependencias para usar Docx4j -->
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+            <version>11.4.9</version>
+        </dependency>
+
+        <!-- Export FO para generar PDF con Docx4j -->
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-export-fo</artifactId>
+            <version>11.4.9</version>
+        </dependency>
+
+        <!-- Apache FOP (requerido por Docx4j para generar PDF) -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop</artifactId>
+            <version>2.8</version>
+            <exclusions>
+                <!-- Excluir dependencias conflictivas -->
+                <exclusion>
+                    <groupId>xalan</groupId>
+                    <artifactId>xalan</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Avalon Framework (requerido por Apache FOP) -->
+        <dependency>
+            <groupId>org.apache.avalon.framework</groupId>
+            <artifactId>avalon-framework-api</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.avalon.framework</groupId>
+            <artifactId>avalon-framework-impl</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+
+        <!-- Dependencias adicionales de Docx4j para mejor compatibilidad -->
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-core</artifactId>
+            <version>11.4.9</version>
+        </dependency>
+
+        <!-- JAXB (necesario para Java 11+) -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.0</version>
         </dependency>
 
     </dependencies>

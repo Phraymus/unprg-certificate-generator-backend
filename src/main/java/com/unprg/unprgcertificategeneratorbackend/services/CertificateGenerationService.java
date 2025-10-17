@@ -1,9 +1,6 @@
 package com.unprg.unprgcertificategeneratorbackend.services;
 
-import com.itextpdf.html2pdf.HtmlConverter;
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.*;
-import com.unprg.unprgcertificategeneratorbackend.services.TbEventoFormatoCertificadoService;
-import com.unprg.unprgcertificategeneratorbackend.services.TbFormatoCertificadoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
@@ -58,7 +55,6 @@ public class CertificateGenerationService {
         String rutaCompleta = formato.getRutaFormato();
         Path templatePath;
 
-        // Verificar si la ruta ya incluye el directorio base
         if (rutaCompleta.startsWith("uploads/") || rutaCompleta.startsWith("uploads\\")) {
             templatePath = Paths.get(rutaCompleta);
         } else {
@@ -76,6 +72,184 @@ public class CertificateGenerationService {
 
         // 4. Procesar el template y devolver el Word procesado
         return processWordTemplateOnly(templatePath, data);
+    }
+
+    /**
+     * Genera un certificado en formato PDF usando LibreOffice
+     * @param participante Datos del participante
+     * @return Array de bytes del PDF generado
+     * @throws Exception Si ocurre algún error en el proceso
+     */
+    public byte[] generateCertificatePdf(TbParticipanteDto participante) throws Exception {
+        String tempFileName = "certificate_pdf_" + UUID.randomUUID().toString();
+        Path tempDocxPath = Paths.get(tempDir, tempFileName + ".docx");
+        Path tempPdfPath = Paths.get(tempDir, tempFileName + ".pdf");
+
+        try {
+            // Crear directorio temporal si no existe
+            Files.createDirectories(Paths.get(tempDir));
+
+            // 1. Primero generar el Word (reutilizamos el método existente)
+            byte[] wordBytes = generateCertificateWord(participante);
+
+            // 2. Guardar temporalmente el Word
+            Files.write(tempDocxPath, wordBytes);
+            log.info("Word temporal guardado en: {}", tempDocxPath);
+
+            // 3. Convertir Word a PDF usando LibreOffice
+            convertWithLibreOffice(tempDocxPath, tempPdfPath);
+
+            // 4. Leer el PDF generado y devolverlo como byte array
+            byte[] pdfBytes = Files.readAllBytes(tempPdfPath);
+            log.info("PDF generado exitosamente: {} bytes", pdfBytes.length);
+
+            return pdfBytes;
+
+        } finally {
+            // Limpiar archivos temporales
+            try {
+                Files.deleteIfExists(tempDocxPath);
+                Files.deleteIfExists(tempPdfPath);
+                log.debug("Archivos temporales eliminados");
+            } catch (Exception e) {
+                log.warn("No se pudieron eliminar archivos temporales", e);
+            }
+        }
+    }
+
+    /**
+     * Convierte un documento Word a PDF usando LibreOffice
+     * LibreOffice debe estar instalado en el sistema
+     */
+    private void convertWithLibreOffice(Path docxPath, Path pdfPath) throws Exception {
+        log.info("Convirtiendo a PDF con LibreOffice...");
+
+        // Comandos comunes de LibreOffice según el SO
+        String[] possibleCommands = {
+                "soffice",           // Linux
+                "libreoffice",       // Linux alternativo
+                "/usr/bin/soffice",  // Linux ruta completa
+                "C:\\Program Files\\LibreOffice\\program\\soffice.exe",  // Windows
+                "/Applications/LibreOffice.app/Contents/MacOS/soffice"  // macOS
+        };
+
+        String command = null;
+        for (String cmd : possibleCommands) {
+            if (isCommandAvailable(cmd)) {
+                command = cmd;
+                log.info("LibreOffice encontrado en: {}", cmd);
+                break;
+            }
+        }
+
+        if (command == null) {
+            throw new RuntimeException(
+                    "LibreOffice no está instalado o no se encuentra en el PATH.\n" +
+                            "Por favor instala LibreOffice desde: https://www.libreoffice.org/download/\n" +
+                            "O verifica que esté en el PATH del sistema."
+            );
+        }
+
+        try {
+            // Obtener el directorio de salida
+            String outputDir = pdfPath.getParent().toString();
+
+            // Construir el comando
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    command,
+                    "--headless",           // Ejecutar sin interfaz gráfica
+                    "--convert-to", "pdf",  // Convertir a PDF
+                    "--outdir", outputDir,  // Directorio de salida
+                    docxPath.toString()     // Archivo de entrada
+            );
+
+            // Redirigir errores a la salida estándar
+            processBuilder.redirectErrorStream(true);
+
+            log.info("Ejecutando: {} --headless --convert-to pdf --outdir {} {}",
+                    command, outputDir, docxPath.getFileName());
+
+            Process process = processBuilder.start();
+
+            // Leer la salida del proceso
+            StringBuilder output = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                    log.debug("LibreOffice output: {}", line);
+                }
+            }
+
+            // Esperar a que termine el proceso
+            int exitCode = process.waitFor();
+
+            if (exitCode != 0) {
+                String errorMsg = String.format(
+                        "LibreOffice terminó con código de error: %d\nOutput: %s",
+                        exitCode, output.toString()
+                );
+                log.error(errorMsg);
+                throw new RuntimeException(errorMsg);
+            }
+
+            // LibreOffice genera el PDF con el mismo nombre base que el DOCX
+            Path libreOfficePdf = Paths.get(outputDir,
+                    docxPath.getFileName().toString().replace(".docx", ".pdf"));
+
+            // Verificar que se creó el PDF
+            if (!Files.exists(libreOfficePdf)) {
+                throw new RuntimeException(
+                        "LibreOffice no generó el PDF esperado en: " + libreOfficePdf
+                );
+            }
+
+            // Si el nombre no coincide con el esperado, renombrar
+            if (!libreOfficePdf.equals(pdfPath)) {
+                Files.move(libreOfficePdf, pdfPath);
+            }
+
+            log.info("✓ Conversión con LibreOffice completada exitosamente");
+            log.info("  Archivo PDF: {} ({} KB)",
+                    pdfPath.getFileName(),
+                    Files.size(pdfPath) / 1024);
+
+        } catch (IOException | InterruptedException e) {
+            log.error("Error en conversión con LibreOffice", e);
+            throw new RuntimeException("Error al convertir con LibreOffice: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Verifica si un comando de LibreOffice está disponible en el sistema
+     */
+    private boolean isCommandAvailable(String command) {
+        try {
+            // Verificar si es una ruta completa que existe
+            File file = new File(command);
+            if (file.exists() && file.canExecute()) {
+                return true;
+            }
+
+            // Si no es ruta completa, intentar ejecutar con --version
+            ProcessBuilder pb = new ProcessBuilder(command, "--version");
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            // Consumir la salida para evitar que se bloquee
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                while (reader.readLine() != null) {
+                    // Consumir líneas
+                }
+            }
+
+            int exitCode = process.waitFor();
+            return exitCode == 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private byte[] processWordTemplateOnly(Path templatePath, Map<String, Object> data) throws Exception {
@@ -171,23 +345,24 @@ public class CertificateGenerationService {
             log.info("Footers: {}", document.getFooterList().size());
 
             // Procesar párrafos del body
-            for (int i = 0; i < document.getParagraphs().size(); i++) {
-                XWPFParagraph paragraph = document.getParagraphs().get(i);
-                log.info("--- Párrafo {} ---", i);
-                log.info("Texto completo: '{}'", paragraph.getText());
+            for (int p = 0; p < document.getParagraphs().size(); p++) {
+                XWPFParagraph paragraph = document.getParagraphs().get(p);
+                log.info("Body párrafo {}: '{}'", p, paragraph.getText());
                 replaceInParagraph(paragraph, data);
             }
 
-            // Procesar tablas
+            // Procesar tablas del body
             for (int t = 0; t < document.getTables().size(); t++) {
                 XWPFTable table = document.getTables().get(t);
-                log.info("--- Tabla {} ---", t);
+                log.info("--- Body Tabla {} ---", t);
                 for (int r = 0; r < table.getRows().size(); r++) {
                     XWPFTableRow row = table.getRows().get(r);
                     for (int c = 0; c < row.getTableCells().size(); c++) {
                         XWPFTableCell cell = row.getTableCells().get(c);
-                        log.info("  Celda [{},{}]: '{}'", r, c, cell.getText());
-                        for (XWPFParagraph paragraph : cell.getParagraphs()) {
+                        log.info("  Tabla {} Celda[{},{}] párrafos: {}", t, r, c, cell.getParagraphs().size());
+                        for (int p = 0; p < cell.getParagraphs().size(); p++) {
+                            XWPFParagraph paragraph = cell.getParagraphs().get(p);
+                            log.info("    Celda[{},{}] párrafo {}: '{}'", r, c, p, paragraph.getText());
                             replaceInParagraph(paragraph, data);
                         }
                     }
