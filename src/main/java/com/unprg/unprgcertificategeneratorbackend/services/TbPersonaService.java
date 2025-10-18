@@ -9,4 +9,6 @@ public interface TbPersonaService extends GenericCrud<TbPersonaDto, Integer> {
     List<TbPersonaDto> findAll();
 
     List<TbPersonaDto> findAllByNombreOrDni(String search);
+
+    TbPersonaDto findByDni(String dni);
 }

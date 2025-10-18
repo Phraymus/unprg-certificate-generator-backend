@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TbPersonaRepository extends JpaRepository<TbPersona, Integer> {
 
@@ -13,4 +14,6 @@ public interface TbPersonaRepository extends JpaRepository<TbPersona, Integer> {
     @Query("SELECT t FROM TbPersona t WHERE " +
             "(t.nombres LIKE %:param% OR t.apellidoPaterno LIKE %:param% OR t.apellidoMaterno LIKE %:param% OR t.dni LIKE %:param%)")
     List<TbPersona> findAllByNombresOrApellidoPaternoOrApellidoMaternoOrDniLike(@Param("param") String param);
+
+    Optional<TbPersona> findByDni(String dni);
 }

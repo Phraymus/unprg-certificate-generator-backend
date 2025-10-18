@@ -43,6 +43,12 @@ public class TbPersonaServiceImpl implements TbPersonaService {
     }
 
     @Override
+    public TbPersonaDto findByDni(String dni) {
+        Optional<TbPersona> tbPersona = tbPersonaRepository.findByDni(dni);
+        return tbPersona.map(persona -> TbPersonaDto.build().fromEntity(persona)).orElse(null);
+    }
+
+    @Override
     public List<TbPersonaDto> findAll() {
         List<TbPersona> tbPersonaList = tbPersonaRepository.findAll();
         return tbPersonaList.stream().map(persona -> TbPersonaDto.build().fromEntity(persona)).toList();
