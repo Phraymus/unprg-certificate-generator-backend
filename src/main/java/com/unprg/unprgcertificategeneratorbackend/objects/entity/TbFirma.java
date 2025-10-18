@@ -1,9 +1,6 @@
 package com.unprg.unprgcertificategeneratorbackend.objects.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Builder
@@ -15,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 public class TbFirma {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idtb_firma", nullable = false)
     private Integer id;
 
@@ -24,4 +22,16 @@ public class TbFirma {
     @Column(name = "nombre", nullable = false, length = 45)
     private String nombre;
 
+    @Column(name = "estado", nullable = false, length = 1)
+    private String estado;
+
+    @Column(name = "cargo")
+    private String cargo;
+
+    @Column(name = "entidad")
+    private String entidad;
+
+    @Lob
+    @Column(name = "imagen", columnDefinition = "LONGBLOB")
+    private byte[] imagen;
 }

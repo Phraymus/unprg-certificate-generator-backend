@@ -14,6 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 public class TbFormatoCertificado {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idtb_formato_certificado", nullable = false)
     private Integer id;
 
@@ -23,11 +24,10 @@ public class TbFormatoCertificado {
     @Column(name = "nombre_formato", nullable = false, length = 45)
     private String nombreFormato;
 
-    @Column(name = "ruta_formato", nullable = false, length = 45)
+    @Column(name = "ruta_formato", nullable = false, length = 200) // AUMENTADO: para rutas largas
     private String rutaFormato;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idtb_usuario", nullable = false)
     private TbUsuario idtbUsuario;
-
 }

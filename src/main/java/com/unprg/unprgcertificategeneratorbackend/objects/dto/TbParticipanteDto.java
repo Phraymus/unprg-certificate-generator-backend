@@ -1,23 +1,115 @@
 package com.unprg.unprgcertificategeneratorbackend.objects.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbParticipante;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * DTO for {@link com.unprg.unprgcertificategeneratorbackend.objects.entity.TbParticipante}
- */
 @Data
 @Builder
-@Value
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(Include.NON_NULL)
+@EqualsAndHashCode(callSuper = false)
 public class TbParticipanteDto implements Serializable {
-    TbParticipanteIdDto id;
-    TbEventoDto idtbEvento;
-    TbPersonaDto idtbPersona;
-    String estado;
-    String fechaInscripcion;
-    BigDecimal nota;
+
+    private static final long serialVersionUID = 1L;
+
+    private TbParticipanteIdDto id;
+    private TbEventoDto tbEvento;
+    private TbPersonaDto tbPersona;
+    private String estado;
+    private String fechaInscripcion;
+    private BigDecimal nota;
+
+    @JsonIgnore
+    @Builder.Default
+    private TbParticipanteIdDto defId = null;
+
+    @JsonIgnore
+    @Builder.Default
+    private TbEventoDto defTbEvento = null;
+
+    @JsonIgnore
+    @Builder.Default
+    private TbPersonaDto defTbPersona = null;
+
+    public static TbParticipanteDto build() {
+        return TbParticipanteDto.builder().build();
+    }
+
+    public TbParticipanteDto fromEntity(TbParticipanteDto template, TbParticipante entity) {
+        if (entity != null) {
+            TbParticipanteDto dto = TbParticipanteDto.builder()
+                    .estado(entity.getEstado())
+                    .fechaInscripcion(entity.getFechaInscripcion())
+                    .nota(entity.getNota())
+                    .build();
+
+            if (template.getDefId() != null) {
+                dto.setId(TbParticipanteIdDto.build().fromEntity(template.getDefId(), entity.getId()));
+                dto.setDefId(template.getDefId());
+            }
+            if (template.getDefTbEvento() != null) {
+                dto.setTbEvento(TbEventoDto.build().fromEntity(template.getDefTbEvento(), entity.getIdtbEvento()));
+                dto.setDefTbEvento(template.getDefTbEvento());
+            }
+            if (template.getDefTbPersona() != null) {
+                dto.setTbPersona(TbPersonaDto.build().fromEntity(template.getDefTbPersona(), entity.getIdtbPersona()));
+                dto.setDefTbPersona(template.getDefTbPersona());
+            }
+            return dto;
+        } else {
+            return null;
+        }
+    }
+
+    public TbParticipanteDto fromProxy(TbParticipanteDto template, TbParticipanteDto entity) {
+        if (entity != null) {
+            TbParticipanteDto dto = TbParticipanteDto.builder()
+                    .estado(entity.getEstado())
+                    .fechaInscripcion(entity.getFechaInscripcion())
+                    .nota(entity.getNota())
+                    .build();
+
+            if (template.getDefId() != null) {
+                dto.setId(TbParticipanteIdDto.build().fromProxy(template.getDefId(), entity.getId()));
+                dto.setDefId(template.getDefId());
+            }
+            if (template.getDefTbEvento() != null) {
+                dto.setTbEvento(TbEventoDto.build().fromProxy(template.getDefTbEvento(), entity.getTbEvento()));
+                dto.setDefTbEvento(template.getDefTbEvento());
+            }
+            if (template.getDefTbPersona() != null) {
+                dto.setTbPersona(TbPersonaDto.build().fromProxy(template.getDefTbPersona(), entity.getTbPersona()));
+                dto.setDefTbPersona(template.getDefTbPersona());
+            }
+            return dto;
+        } else {
+            return null;
+        }
+    }
+
+    public TbParticipanteDto fromEntity(TbParticipante entity) {
+        return fromEntity(this, entity);
+    }
+
+    public TbParticipante toEntity() {
+        return TbParticipante.builder()
+                .id(this.getId() != null ? this.getId().toEntity() : null)
+                .estado(this.getEstado())
+                .fechaInscripcion(this.getFechaInscripcion())
+                .nota(this.getNota())
+                .idtbEvento(this.getTbEvento() != null ? this.getTbEvento().toEntity() : null)
+                .idtbPersona(this.getTbPersona() != null ? this.getTbPersona().toEntity() : null)
+                .build();
+    }
 }

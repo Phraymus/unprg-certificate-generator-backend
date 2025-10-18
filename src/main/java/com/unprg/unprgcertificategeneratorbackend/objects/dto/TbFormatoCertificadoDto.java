@@ -1,21 +1,90 @@
 package com.unprg.unprgcertificategeneratorbackend.objects.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbFormatoCertificado;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-/**
- * DTO for {@link com.unprg.unprgcertificategeneratorbackend.objects.entity.TbFormatoCertificado}
- */
 @Data
 @Builder
-@Value
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(Include.NON_NULL)
+@EqualsAndHashCode(callSuper = false)
 public class TbFormatoCertificadoDto implements Serializable {
-    Integer id;
-    String codigo;
-    String nombreFormato;
-    String rutaFormato;
-    TbUsuarioDto idtbUsuario;
+
+    private static final long serialVersionUID = 1L;
+
+    private Integer id;
+    private String codigo;
+    private String nombreFormato;
+    private String rutaFormato;
+    private TbUsuarioDto tbUsuario;
+
+    @JsonIgnore
+    @Builder.Default
+    private TbUsuarioDto defIdtbUsuario = null;
+
+    public static TbFormatoCertificadoDto build() {
+        return TbFormatoCertificadoDto.builder().build();
+    }
+
+    public TbFormatoCertificadoDto fromEntity(TbFormatoCertificadoDto template, TbFormatoCertificado entity) {
+        if (entity != null) {
+            TbFormatoCertificadoDto dto = TbFormatoCertificadoDto.builder()
+                    .id(entity.getId())
+                    .codigo(entity.getCodigo())
+                    .nombreFormato(entity.getNombreFormato())
+                    .rutaFormato(entity.getRutaFormato())
+                    .build();
+
+            if (template.getDefIdtbUsuario() != null) {
+                dto.setTbUsuario(TbUsuarioDto.build().fromEntity(template.getDefIdtbUsuario(), entity.getIdtbUsuario()));
+                dto.setDefIdtbUsuario(template.getDefIdtbUsuario());
+            }
+            return dto;
+        } else {
+            return null;
+        }
+    }
+
+    public TbFormatoCertificadoDto fromProxy(TbFormatoCertificadoDto template, TbFormatoCertificadoDto entity) {
+        if (entity != null) {
+            TbFormatoCertificadoDto dto = TbFormatoCertificadoDto.builder()
+                    .id(entity.getId())
+                    .codigo(entity.getCodigo())
+                    .nombreFormato(entity.getNombreFormato())
+                    .rutaFormato(entity.getRutaFormato())
+                    .build();
+
+            if (template.getDefIdtbUsuario() != null) {
+                dto.setTbUsuario(TbUsuarioDto.build().fromProxy(template.getDefIdtbUsuario(), entity.getTbUsuario()));
+                dto.setDefIdtbUsuario(template.getDefIdtbUsuario());
+            }
+            return dto;
+        } else {
+            return null;
+        }
+    }
+
+    public TbFormatoCertificadoDto fromEntity(TbFormatoCertificado entity) {
+        return fromEntity(this, entity);
+    }
+
+    public TbFormatoCertificado toEntity() {
+        return TbFormatoCertificado.builder()
+                .id(this.getId())
+                .codigo(this.getCodigo())
+                .nombreFormato(this.getNombreFormato())
+                .rutaFormato(this.getRutaFormato())
+                .idtbUsuario(this.getTbUsuario() != null ? this.getTbUsuario().toEntity() : null)
+                .build();
+    }
 }
