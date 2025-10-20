@@ -38,4 +38,7 @@ public class TbParticipante {
     @Column(name = "nota", precision = 2)
     private BigDecimal nota;
 
+    @Lob
+    @Column(name = "comprobante", columnDefinition = "LONGBLOB")
+    private byte[] comprobante;
 }

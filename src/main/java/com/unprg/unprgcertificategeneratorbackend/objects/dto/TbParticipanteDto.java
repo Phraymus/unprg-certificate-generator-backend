@@ -29,6 +29,7 @@ public class TbParticipanteDto implements Serializable {
     private String estado;
     private String fechaInscripcion;
     private BigDecimal nota;
+    private byte[] comprobante;
 
     @JsonIgnore
     @Builder.Default
@@ -52,6 +53,7 @@ public class TbParticipanteDto implements Serializable {
                     .estado(entity.getEstado())
                     .fechaInscripcion(entity.getFechaInscripcion())
                     .nota(entity.getNota())
+                    .comprobante(entity.getComprobante())
                     .build();
 
             if (template.getDefId() != null) {
@@ -78,6 +80,7 @@ public class TbParticipanteDto implements Serializable {
                     .estado(entity.getEstado())
                     .fechaInscripcion(entity.getFechaInscripcion())
                     .nota(entity.getNota())
+                    .comprobante(entity.getComprobante())
                     .build();
 
             if (template.getDefId() != null) {
@@ -108,6 +111,7 @@ public class TbParticipanteDto implements Serializable {
                 .estado(this.getEstado())
                 .fechaInscripcion(this.getFechaInscripcion())
                 .nota(this.getNota())
+                .comprobante(this.getComprobante())
                 .idtbEvento(this.getTbEvento() != null ? this.getTbEvento().toEntity() : null)
                 .idtbPersona(this.getTbPersona() != null ? this.getTbPersona().toEntity() : null)
                 .build();
