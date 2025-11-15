@@ -1,8 +1,8 @@
 package com.unprg.unprgcertificategeneratorbackend.controllers;
 
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoFormatoCertificadoFirmaDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoFormatoCertificadoFirmaIdDto;
-import com.unprg.unprgcertificategeneratorbackend.services.TbEventoFormatoCertificadoFirmaService;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbFormatoCertificadoFirmaDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbFormatoCertificadoFirmaIdDto;
+import com.unprg.unprgcertificategeneratorbackend.services.TbFormatoCertificadoFirmaService;
 import com.unprg.unprgcertificategeneratorbackend.utils.ApiResponse;
 import com.unprg.unprgcertificategeneratorbackend.utils.GenericController;
 import com.unprg.unprgcertificategeneratorbackend.utils.GenericCrud;
@@ -17,42 +17,42 @@ import java.util.List;
 @RequestMapping("/api/tbeventoformatocertificadofirmas")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
-class TbEventoFormatoCertificadoFirmaController extends GenericController<TbEventoFormatoCertificadoFirmaDto, TbEventoFormatoCertificadoFirmaIdDto> {
+class TbFormatoCertificadoFirmaController extends GenericController<TbFormatoCertificadoFirmaDto, TbFormatoCertificadoFirmaIdDto> {
 
-    private final TbEventoFormatoCertificadoFirmaService tbEventoFormatoCertificadoFirmaService;
+    private final TbFormatoCertificadoFirmaService tbFormatoCertificadoFirmaService;
 
     @Override
-    public GenericCrud<TbEventoFormatoCertificadoFirmaDto, TbEventoFormatoCertificadoFirmaIdDto> getCrud() {
-        return tbEventoFormatoCertificadoFirmaService;
+    public GenericCrud<TbFormatoCertificadoFirmaDto, TbFormatoCertificadoFirmaIdDto> getCrud() {
+        return tbFormatoCertificadoFirmaService;
     }
 
     @Override
-    protected TbEventoFormatoCertificadoFirmaIdDto getPK(TbEventoFormatoCertificadoFirmaDto d) {
+    protected TbFormatoCertificadoFirmaIdDto getPK(TbFormatoCertificadoFirmaDto d) {
         return d.getId();
     }
 
     @GetMapping(path = "/{idFirma}/{idEventoFormato}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> findById(@PathVariable("idFirma") Integer idFirma, 
                                                @PathVariable("idEventoFormato") Integer idEventoFormato) {
-        TbEventoFormatoCertificadoFirmaIdDto id = TbEventoFormatoCertificadoFirmaIdDto.builder()
+        TbFormatoCertificadoFirmaIdDto id = TbFormatoCertificadoFirmaIdDto.builder()
                 .idtbFirma(idFirma)
-                .tbEventoFormatoCertificadoIdtbEvento(idEventoFormato)
+                .idtbFormatoCertificado(idEventoFormato)
                 .build();
-        TbEventoFormatoCertificadoFirmaDto dto = getCrud().findById(id);
+        TbFormatoCertificadoFirmaDto dto = getCrud().findById(id);
         return ResponseEntity.ok(ApiResponse.ok("obtener Evento Formato Certificado Firma por id", dto));
     }
 
     @GetMapping(path = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> findAll() {
-        List<TbEventoFormatoCertificadoFirmaDto> list = tbEventoFormatoCertificadoFirmaService.findAll();
+        List<TbFormatoCertificadoFirmaDto> list = tbFormatoCertificadoFirmaService.findAll();
         return ResponseEntity.ok(ApiResponse.ok("obtener Eventos Formato Certificado Firmas", list));
     }
 
     @GetMapping(path = "/findByEventoFormato/{idTbEventoFormatoCertificado}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> findAllByIdTbEvento(
             @PathVariable("idTbEventoFormatoCertificado") Integer idTbEventoFormatoCertificado) {
-        List<TbEventoFormatoCertificadoFirmaDto> list =
-                tbEventoFormatoCertificadoFirmaService.findAllByIdTbEventoCertificado(idTbEventoFormatoCertificado);
+        List<TbFormatoCertificadoFirmaDto> list =
+                tbFormatoCertificadoFirmaService.findAllByIdTbEventoCertificado(idTbEventoFormatoCertificado);
         return ResponseEntity.ok(ApiResponse.ok("obtener Eventos Formato Certificado Firmas por idTbEvento", list));
     }
 }

@@ -25,7 +25,7 @@ public class CertificateGenerationService {
 
     private final TbEventoFormatoCertificadoService tbEventoFormatoCertificadoService;
     private final TbFormatoCertificadoService tbFormatoCertificadoService;
-    private final TbEventoFormatoCertificadoFirmaService tbEventoFormatoCertificadoFirmaService;
+    private final TbFormatoCertificadoFirmaService tbFormatoCertificadoFirmaService;
 
     @Value("${app.upload.dir:./uploads}")
     private String uploadDir;
@@ -305,11 +305,11 @@ public class CertificateGenerationService {
         data.put("fecha_inscripcion", participante.getFechaInscripcion());
 
         // Obtener firmas relacionadas al evento
-        List<TbEventoFormatoCertificadoFirmaDto> firmasEvento =
-                tbEventoFormatoCertificadoFirmaService.findAllByIdTbEventoCertificado(participante.getTbEvento().getId());
+        List<TbFormatoCertificadoFirmaDto> firmasEvento =
+                tbFormatoCertificadoFirmaService.findAllByIdTbEventoCertificado(participante.getTbEvento().getId());
 
         List<TbFirmaDto> firmasDto = firmasEvento.stream()
-                .map(TbEventoFormatoCertificadoFirmaDto::getIdtbFirma)
+                .map(TbFormatoCertificadoFirmaDto::getTbFirma)
                 .toList();
 
         firmasDto.forEach(firmaDto -> {

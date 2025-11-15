@@ -1,0 +1,12 @@
+package com.unprg.unprgcertificategeneratorbackend.repositories;
+
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbEventoFormatoCertificado;
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbFormatoCertificadoFirma;
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbFormatoCertificadoFirmaId;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TbFormatoCertificadoFirmaRepository extends JpaRepository<TbFormatoCertificadoFirma, TbFormatoCertificadoFirmaId> {
+//    List<TbFormatoCertificadoFirma> findAllByTbEventoFormatoCertificadoIdtbEventoId(Integer idTbEventoFormatoCertificado);
+
+//    void deleteAllByTbEventoFormatoCertificadoIdtbEvento(TbEventoFormatoCertificado tbEventoFormatoCertificadoIdtbEvento);
+}
