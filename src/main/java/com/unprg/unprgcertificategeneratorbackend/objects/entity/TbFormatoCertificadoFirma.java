@@ -17,12 +17,12 @@ public class TbFormatoCertificadoFirma {
     @EmbeddedId
     private TbFormatoCertificadoFirmaId id;
 
-    @MapsId("idtbFirma")
+    @MapsId("idTbFirma")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idtb_firma", nullable = false)
     private TbFirma tbFirma;
 
-    @MapsId("idtbFormatoCertificado")
+    @MapsId("idTbFormatoCertificado")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idtb_formato_certificado", nullable = false)
     private TbFormatoCertificado tbFormatoCertificado;

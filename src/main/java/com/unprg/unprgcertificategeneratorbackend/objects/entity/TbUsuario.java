@@ -26,6 +26,6 @@ public class TbUsuario {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "idtb_persona", nullable = false)
-    private TbPersona idtbPersona;
+    private TbPersona tbPersona;
 
 }

@@ -39,7 +39,7 @@ public class TbTipoParticipanteDto implements Serializable {
         }
     }
 
-    public TbTipoParticipanteDto fromProxy(TbTipoParticipanteDto template, TbTipoParticipante entity) {
+    public TbTipoParticipanteDto fromProxy(TbTipoParticipanteDto template, TbTipoParticipanteDto entity) {
         if (entity != null) {
             return TbTipoParticipanteDto.builder()
                     .id(entity.getId())

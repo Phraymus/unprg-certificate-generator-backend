@@ -46,7 +46,7 @@ public class TbFormatoCertificadoDto implements Serializable {
                     .build();
 
             if (template.getDefIdtbUsuario() != null) {
-                dto.setTbUsuario(TbUsuarioDto.build().fromEntity(template.getDefIdtbUsuario(), entity.getIdtbUsuario()));
+                dto.setTbUsuario(TbUsuarioDto.build().fromEntity(template.getDefIdtbUsuario(), entity.getTbUsuario()));
                 dto.setDefIdtbUsuario(template.getDefIdtbUsuario());
             }
             return dto;
@@ -84,7 +84,7 @@ public class TbFormatoCertificadoDto implements Serializable {
                 .codigo(this.getCodigo())
                 .nombreFormato(this.getNombreFormato())
                 .rutaFormato(this.getRutaFormato())
-                .idtbUsuario(this.getTbUsuario() != null ? this.getTbUsuario().toEntity() : null)
+                .tbUsuario(this.getTbUsuario() != null ? this.getTbUsuario().toEntity() : null)
                 .build();
     }
 }

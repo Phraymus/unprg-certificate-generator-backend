@@ -19,15 +19,15 @@ public class TbParticipante {
     @EmbeddedId
     private TbParticipanteId id;
 
-    @MapsId("idtbEvento")
+    @MapsId("idTbEvento")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idtb_evento", nullable = false)
-    private TbEvento idtbEvento;
+    private TbEvento tbEvento;
 
-    @MapsId("idtbPersona")
+    @MapsId("idTbPersona")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idtb_persona", nullable = false)
-    private TbPersona idtbPersona;
+    private TbPersona tbPersona;
 
     @Column(name = "estado", nullable = false, length = 1)
     private String estado;
@@ -41,4 +41,8 @@ public class TbParticipante {
     @Lob
     @Column(name = "comprobante", columnDefinition = "LONGBLOB")
     private byte[] comprobante;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idtb_tipo_participante", nullable = false)
+    private TbTipoParticipante tbTipoParticipante;
 }

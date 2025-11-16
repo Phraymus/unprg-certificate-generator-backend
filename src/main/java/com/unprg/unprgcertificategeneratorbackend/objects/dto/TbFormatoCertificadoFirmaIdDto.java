@@ -31,8 +31,8 @@ public class TbFormatoCertificadoFirmaIdDto implements Serializable {
     public TbFormatoCertificadoFirmaIdDto fromEntity(TbFormatoCertificadoFirmaIdDto template, TbFormatoCertificadoFirmaId entity) {
         if (entity != null) {
             return TbFormatoCertificadoFirmaIdDto.builder()
-                    .idtbFirma(entity.getIdtbFirma())
-                    .idtbFormatoCertificado(entity.getIdtbFormatoCertificado())
+                    .idtbFirma(entity.getIdTbFirma())
+                    .idtbFormatoCertificado(entity.getIdTbFormatoCertificado())
                     .build();
         } else {
             return null;
@@ -56,8 +56,8 @@ public class TbFormatoCertificadoFirmaIdDto implements Serializable {
 
     public TbFormatoCertificadoFirmaId toEntity() {
         return TbFormatoCertificadoFirmaId.builder()
-                .idtbFirma(this.getIdtbFirma())
-                .idtbFormatoCertificado(this.getIdtbFormatoCertificado())
+                .idTbFirma(this.getIdtbFirma())
+                .idTbFormatoCertificado(this.getIdtbFormatoCertificado())
                 .build();
     }
 }

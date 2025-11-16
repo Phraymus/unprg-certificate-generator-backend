@@ -30,6 +30,7 @@ public class TbParticipanteDto implements Serializable {
     private String fechaInscripcion;
     private BigDecimal nota;
     private byte[] comprobante;
+    private TbTipoParticipanteDto tbTipoParticipante;
 
     @JsonIgnore
     @Builder.Default
@@ -42,6 +43,10 @@ public class TbParticipanteDto implements Serializable {
     @JsonIgnore
     @Builder.Default
     private TbPersonaDto defTbPersona = null;
+
+    @JsonIgnore
+    @Builder.Default
+    private TbTipoParticipanteDto defTbTipoParticipante = null;
 
     public static TbParticipanteDto build() {
         return TbParticipanteDto.builder().build();
@@ -61,12 +66,16 @@ public class TbParticipanteDto implements Serializable {
                 dto.setDefId(template.getDefId());
             }
             if (template.getDefTbEvento() != null) {
-                dto.setTbEvento(TbEventoDto.build().fromEntity(template.getDefTbEvento(), entity.getIdtbEvento()));
+                dto.setTbEvento(TbEventoDto.build().fromEntity(template.getDefTbEvento(), entity.getTbEvento()));
                 dto.setDefTbEvento(template.getDefTbEvento());
             }
             if (template.getDefTbPersona() != null) {
-                dto.setTbPersona(TbPersonaDto.build().fromEntity(template.getDefTbPersona(), entity.getIdtbPersona()));
+                dto.setTbPersona(TbPersonaDto.build().fromEntity(template.getDefTbPersona(), entity.getTbPersona()));
                 dto.setDefTbPersona(template.getDefTbPersona());
+            }
+            if (template.getDefTbTipoParticipante() != null) {
+                dto.setTbTipoParticipante(TbTipoParticipanteDto.build().fromEntity(template.getDefTbTipoParticipante(), entity.getTbTipoParticipante()));
+                dto.setDefTbTipoParticipante(template.getDefTbTipoParticipante());
             }
             return dto;
         } else {
@@ -95,6 +104,10 @@ public class TbParticipanteDto implements Serializable {
                 dto.setTbPersona(TbPersonaDto.build().fromProxy(template.getDefTbPersona(), entity.getTbPersona()));
                 dto.setDefTbPersona(template.getDefTbPersona());
             }
+            if (template.getDefTbTipoParticipante() != null) {
+                dto.setTbTipoParticipante(TbTipoParticipanteDto.build().fromProxy(template.getDefTbTipoParticipante(), entity.getTbTipoParticipante()));
+                dto.setDefTbTipoParticipante(template.getDefTbTipoParticipante());
+            }
             return dto;
         } else {
             return null;
@@ -112,8 +125,9 @@ public class TbParticipanteDto implements Serializable {
                 .fechaInscripcion(this.getFechaInscripcion())
                 .nota(this.getNota())
                 .comprobante(this.getComprobante())
-                .idtbEvento(this.getTbEvento() != null ? this.getTbEvento().toEntity() : null)
-                .idtbPersona(this.getTbPersona() != null ? this.getTbPersona().toEntity() : null)
+                .tbEvento(this.getTbEvento() != null ? this.getTbEvento().toEntity() : null)
+                .tbPersona(this.getTbPersona() != null ? this.getTbPersona().toEntity() : null)
+                .tbTipoParticipante(this.getTbTipoParticipante() != null ? this.getTbTipoParticipante().toEntity() : null)
                 .build();
     }
 }

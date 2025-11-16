@@ -31,8 +31,8 @@ public class TbParticipanteIdDto implements Serializable {
     public TbParticipanteIdDto fromEntity(TbParticipanteIdDto template, TbParticipanteId entity) {
         if (entity != null) {
             return TbParticipanteIdDto.builder()
-                    .idtbEvento(entity.getIdtbEvento())
-                    .idtbPersona(entity.getIdtbPersona())
+                    .idtbEvento(entity.getIdTbEvento())
+                    .idtbPersona(entity.getIdTbPersona())
                     .build();
         } else {
             return null;
@@ -56,8 +56,8 @@ public class TbParticipanteIdDto implements Serializable {
 
     public TbParticipanteId toEntity() {
         return TbParticipanteId.builder()
-                .idtbEvento(this.getIdtbEvento())
-                .idtbPersona(this.getIdtbPersona())
+                .idTbEvento(this.getIdtbEvento())
+                .idTbPersona(this.getIdtbPersona())
                 .build();
     }
 }

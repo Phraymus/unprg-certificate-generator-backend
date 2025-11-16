@@ -41,11 +41,11 @@ public class CertificateGenerationService {
                 .findFirst()
                 .orElse(null);
 
-        if (eventoFormato == null || eventoFormato.getIdtbFormatoCertificado() == null) {
+        if (eventoFormato == null || eventoFormato.getTbFormatoCertificado() == null) {
             throw new RuntimeException("No hay formato de certificado asignado al evento");
         }
 
-        TbFormatoCertificadoDto formato = tbFormatoCertificadoService.findById(eventoFormato.getIdtbFormatoCertificado().getId());
+        TbFormatoCertificadoDto formato = tbFormatoCertificadoService.findById(eventoFormato.getTbFormatoCertificado().getId());
 
         if (formato == null || formato.getRutaFormato() == null) {
             throw new RuntimeException("No se encontró el archivo de formato");

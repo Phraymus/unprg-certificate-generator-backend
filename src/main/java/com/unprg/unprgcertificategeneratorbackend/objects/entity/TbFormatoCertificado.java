@@ -29,5 +29,5 @@ public class TbFormatoCertificado {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idtb_usuario", nullable = false)
-    private TbUsuario idtbUsuario;
+    private TbUsuario tbUsuario;
 }

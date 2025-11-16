@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 @Data
 @Builder
@@ -23,12 +22,14 @@ public class TbEventoFormatoCertificadoDto  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer id;
+    private TbEventoFormatoCertificadoIdDto id;
     private TbEventoDto tbEvento;
-    private TbFormatoCertificadoDto idtbFormatoCertificado;
-    private String codigo;
-    private String descripcion;
-    private LocalDate fecha;
+    private TbFormatoCertificadoDto tbFormatoCertificado;
+    private TbTipoParticipanteDto tbTipoParticipante;
+
+    @JsonIgnore
+    @Builder.Default
+    private TbEventoFormatoCertificadoIdDto defId = null;
 
     @JsonIgnore
     @Builder.Default
@@ -36,7 +37,11 @@ public class TbEventoFormatoCertificadoDto  implements Serializable {
 
     @JsonIgnore
     @Builder.Default
-    private TbFormatoCertificadoDto defIdtbFormatoCertificado = null;
+    private TbFormatoCertificadoDto defTbFormatoCertificado = null;
+
+    @JsonIgnore
+    @Builder.Default
+    private TbTipoParticipanteDto defTbTipoParticipante = null;
 
     public static TbEventoFormatoCertificadoDto build() {
         return TbEventoFormatoCertificadoDto.builder().build();
@@ -45,19 +50,24 @@ public class TbEventoFormatoCertificadoDto  implements Serializable {
     public TbEventoFormatoCertificadoDto fromEntity(TbEventoFormatoCertificadoDto template, TbEventoFormatoCertificado entity) {
         if (entity != null) {
             TbEventoFormatoCertificadoDto dto = TbEventoFormatoCertificadoDto.builder()
-                    .id(entity.getId())
-                    .codigo(entity.getCodigo())
-                    .descripcion(entity.getDescripcion())
-                    .fecha(entity.getFecha())
                     .build();
+
+            if (template.getDefId() != null) {
+                dto.setId(TbEventoFormatoCertificadoIdDto.build().fromEntity(template.getDefId(), entity.getId()));
+                dto.setDefId(template.getDefId());
+            }
 
             if (template.getDefTbEvento() != null) {
                 dto.setTbEvento(TbEventoDto.build().fromEntity(template.getDefTbEvento(), entity.getTbEvento()));
                 dto.setDefTbEvento(template.getDefTbEvento());
             }
-            if (template.getDefIdtbFormatoCertificado() != null) {
-                dto.setIdtbFormatoCertificado(TbFormatoCertificadoDto.build().fromEntity(template.getDefIdtbFormatoCertificado(), entity.getIdtbFormatoCertificado()));
-                dto.setDefIdtbFormatoCertificado(template.getDefIdtbFormatoCertificado());
+            if (template.getDefTbFormatoCertificado() != null) {
+                dto.setTbFormatoCertificado(TbFormatoCertificadoDto.build().fromEntity(template.getDefTbFormatoCertificado(), entity.getTbFormatoCertificado()));
+                dto.setDefTbFormatoCertificado(template.getDefTbFormatoCertificado());
+            }
+            if (template.getDefTbTipoParticipante() != null) {
+                dto.setTbTipoParticipante(TbTipoParticipanteDto.build().fromEntity(template.getDefTbTipoParticipante(), entity.getTbTipoParticipante()));
+                dto.setDefTbTipoParticipante(template.getDefTbTipoParticipante());
             }
             return dto;
         } else {
@@ -69,18 +79,19 @@ public class TbEventoFormatoCertificadoDto  implements Serializable {
         if (entity != null) {
             TbEventoFormatoCertificadoDto dto = TbEventoFormatoCertificadoDto.builder()
                     .id(entity.getId())
-                    .codigo(entity.getCodigo())
-                    .descripcion(entity.getDescripcion())
-                    .fecha(entity.getFecha())
                     .build();
 
             if (template.getDefTbEvento() != null) {
                 dto.setTbEvento(TbEventoDto.build().fromProxy(template.getDefTbEvento(), entity.getTbEvento()));
                 dto.setDefTbEvento(template.getDefTbEvento());
             }
-            if (template.getDefIdtbFormatoCertificado() != null) {
-                dto.setIdtbFormatoCertificado(TbFormatoCertificadoDto.build().fromProxy(template.getDefIdtbFormatoCertificado(), entity.getIdtbFormatoCertificado()));
-                dto.setDefIdtbFormatoCertificado(template.getDefIdtbFormatoCertificado());
+            if (template.getDefTbFormatoCertificado() != null) {
+                dto.setTbFormatoCertificado(TbFormatoCertificadoDto.build().fromProxy(template.getDefTbFormatoCertificado(), entity.getTbFormatoCertificado()));
+                dto.setDefTbFormatoCertificado(template.getDefTbFormatoCertificado());
+            }
+            if (template.getDefTbTipoParticipante() != null) {
+                dto.setTbTipoParticipante(TbTipoParticipanteDto.build().fromProxy(template.getDefTbTipoParticipante(), entity.getTbTipoParticipante()));
+                dto.setDefTbTipoParticipante(template.getDefTbTipoParticipante());
             }
             return dto;
         } else {
@@ -94,12 +105,10 @@ public class TbEventoFormatoCertificadoDto  implements Serializable {
 
     public TbEventoFormatoCertificado toEntity() {
         return TbEventoFormatoCertificado.builder()
-                .id(this.getId())
-                .codigo(this.getCodigo())
-                .descripcion(this.getDescripcion())
-                .fecha(this.getFecha())
+                .id(this.getId() != null ? this.getId().toEntity() : null)
                 .tbEvento(this.getTbEvento() != null ? this.getTbEvento().toEntity() : null)
-                .idtbFormatoCertificado(this.getIdtbFormatoCertificado() != null ? this.getIdtbFormatoCertificado().toEntity() : null)
+                .tbFormatoCertificado(this.getTbFormatoCertificado() != null ? this.getTbFormatoCertificado().toEntity() : null)
+                .tbTipoParticipante(this.tbTipoParticipante != null ? this.tbTipoParticipante.toEntity() : null)
                 .build();
     }
 }

@@ -1,8 +1,6 @@
 package com.unprg.unprgcertificategeneratorbackend.services.impl;
 
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoFormatoCertificadoDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbFormatoCertificadoDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.*;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbEventoFormatoCertificado;
 import com.unprg.unprgcertificategeneratorbackend.repositories.TbEventoFormatoCertificadoRepository;
 import com.unprg.unprgcertificategeneratorbackend.services.TbEventoFormatoCertificadoService;
@@ -38,12 +36,13 @@ public class TbEventoFormatoCertificadoServiceImpl implements TbEventoFormatoCer
     }
 
     @Override
-    public TbEventoFormatoCertificadoDto findById(Integer integer) {
+    public TbEventoFormatoCertificadoDto findById(TbEventoFormatoCertificadoIdDto id) {
         TbEventoFormatoCertificadoDto template = TbEventoFormatoCertificadoDto.builder()
                 .defTbEvento(new TbEventoDto())
-                .defIdtbFormatoCertificado(new TbFormatoCertificadoDto())
+                .defTbFormatoCertificado(new TbFormatoCertificadoDto())
+                .defTbTipoParticipante(new TbTipoParticipanteDto())
                 .build();
-        Optional<TbEventoFormatoCertificado> tbEventoFormatoCertificado = tbEventoFormatoCertificadoRepository.findById(integer);
+        Optional<TbEventoFormatoCertificado> tbEventoFormatoCertificado = tbEventoFormatoCertificadoRepository.findById(id.toEntity());
         return tbEventoFormatoCertificado.map(eventoFormatoCertificado -> TbEventoFormatoCertificadoDto.build().fromEntity(template, eventoFormatoCertificado)).orElse(null);
     }
 
@@ -51,7 +50,8 @@ public class TbEventoFormatoCertificadoServiceImpl implements TbEventoFormatoCer
     public List<TbEventoFormatoCertificadoDto> findAll() {
         TbEventoFormatoCertificadoDto template = TbEventoFormatoCertificadoDto.builder()
                 .defTbEvento(new TbEventoDto())
-                .defIdtbFormatoCertificado(new TbFormatoCertificadoDto())
+                .defTbFormatoCertificado(new TbFormatoCertificadoDto())
+                .defTbTipoParticipante(new TbTipoParticipanteDto())
                 .build();
         List<TbEventoFormatoCertificado> tbEventoFormatoCertificadoList = tbEventoFormatoCertificadoRepository.findAll();
         return tbEventoFormatoCertificadoList.stream().map(eventoFormatoCertificado -> TbEventoFormatoCertificadoDto.build().fromEntity(template, eventoFormatoCertificado)).toList();

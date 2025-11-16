@@ -44,7 +44,7 @@ public class TbUsuarioDto implements Serializable {
                     .build();
 
             if (template.getDefTbPersona() != null) {
-                dto.setTbPersona(TbPersonaDto.build().fromEntity(template.getDefTbPersona(), entity.getIdtbPersona()));
+                dto.setTbPersona(TbPersonaDto.build().fromEntity(template.getDefTbPersona(), entity.getTbPersona()));
                 dto.setDefTbPersona(template.getDefTbPersona());
             }
             return dto;
@@ -80,7 +80,7 @@ public class TbUsuarioDto implements Serializable {
                 .id(this.getId())
                 .usuario(this.getUsuario())
                 .clave(this.getClave())
-                .idtbPersona(this.getTbPersona() != null ? this.getTbPersona().toEntity() : null)
+                .tbPersona(this.getTbPersona() != null ? this.getTbPersona().toEntity() : null)
                 .build();
     }
 }

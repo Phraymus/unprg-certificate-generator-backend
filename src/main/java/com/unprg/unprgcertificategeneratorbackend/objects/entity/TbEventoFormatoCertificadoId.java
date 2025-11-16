@@ -14,26 +14,26 @@ import java.util.Objects;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class TbParticipanteId implements Serializable {
-    private static final long serialVersionUID = 2287453503612582868L;
+public class TbEventoFormatoCertificadoId implements Serializable {
+    private static final long serialVersionUID = 2262779215907498587L;
     @Column(name = "idtb_evento", nullable = false)
     private Integer idTbEvento;
 
-    @Column(name = "idtb_persona", nullable = false)
-    private Integer idTbPersona;
+    @Column(name = "idtb_formato_certificado", nullable = false)
+    private Integer idTbFormatoCertificado;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        TbParticipanteId entity = (TbParticipanteId) o;
-        return Objects.equals(this.idTbPersona, entity.idTbPersona) &&
-                Objects.equals(this.idTbEvento, entity.idTbEvento);
+        TbEventoFormatoCertificadoId entity = (TbEventoFormatoCertificadoId) o;
+        return Objects.equals(this.idTbEvento, entity.idTbEvento) &&
+                Objects.equals(this.idTbFormatoCertificado, entity.idTbFormatoCertificado);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idTbPersona, idTbEvento);
+        return Objects.hash(idTbEvento, idTbFormatoCertificado);
     }
 
 }

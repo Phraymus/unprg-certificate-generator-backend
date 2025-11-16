@@ -1,7 +1,8 @@
 package com.unprg.unprgcertificategeneratorbackend.repositories;
 
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbEventoFormatoCertificado;
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbEventoFormatoCertificadoId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TbEventoFormatoCertificadoRepository extends JpaRepository<TbEventoFormatoCertificado, Integer> {
+public interface TbEventoFormatoCertificadoRepository extends JpaRepository<TbEventoFormatoCertificado, TbEventoFormatoCertificadoId> {
 }
