@@ -38,13 +38,19 @@ public class TbTipoParticipanteServiceImpl implements TbTipoParticipanteService 
 
     @Override
     public TbTipoParticipanteDto findById(Integer integer) {
-        Optional<TbTipoParticipante> optional =  tbTipoParticipanteRepository.findById(integer);
+        Optional<TbTipoParticipante> optional = tbTipoParticipanteRepository.findById(integer);
         return optional.map(tbTipoParticipante -> TbTipoParticipanteDto.build().fromEntity(tbTipoParticipante)).orElse(null);
     }
 
     @Override
     public List<TbTipoParticipanteDto> findAll() {
         List<TbTipoParticipante> tbTipoParticipantes = tbTipoParticipanteRepository.findAll();
+        return tbTipoParticipantes.stream().map(tbTipoParticipante -> TbTipoParticipanteDto.build().fromEntity(tbTipoParticipante)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TbTipoParticipanteDto> findAllByEstado(Boolean estado) {
+        List<TbTipoParticipante> tbTipoParticipantes = tbTipoParticipanteRepository.findAllByEstado(Boolean.TRUE.equals(estado) ? "1" : "0");
         return tbTipoParticipantes.stream().map(tbTipoParticipante -> TbTipoParticipanteDto.build().fromEntity(tbTipoParticipante)).collect(Collectors.toList());
     }
 }

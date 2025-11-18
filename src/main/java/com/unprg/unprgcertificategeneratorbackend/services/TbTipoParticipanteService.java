@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface TbTipoParticipanteService extends GenericCrud<TbTipoParticipanteDto,Integer> {
     List<TbTipoParticipanteDto> findAll();
+
+    List<TbTipoParticipanteDto> findAllByEstado(Boolean estado);
 }

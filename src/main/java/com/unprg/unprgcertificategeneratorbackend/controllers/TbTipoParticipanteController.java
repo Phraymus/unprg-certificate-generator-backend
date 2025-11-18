@@ -41,4 +41,10 @@ class TbTipoParticipanteController extends GenericController<TbTipoParticipanteD
         List<TbTipoParticipanteDto> list = tbTipoParticipanteService.findAll();
         return ResponseEntity.ok(ApiResponse.ok("obtener listado de tipos de participante", list));
     }
+
+    @GetMapping(path = "/findAllByEstado/{estado}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse> findAllByEstado(@PathVariable Boolean estado) {
+        List<TbTipoParticipanteDto> list = tbTipoParticipanteService.findAllByEstado(estado);
+        return ResponseEntity.ok(ApiResponse.ok("obtener listado de tipos de participante por estado", list));
+    }
 }
