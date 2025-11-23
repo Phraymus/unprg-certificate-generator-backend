@@ -1,9 +1,6 @@
 package com.unprg.unprgcertificategeneratorbackend.services.impl;
 
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbEventoDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbParticipanteDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbParticipanteIdDto;
-import com.unprg.unprgcertificategeneratorbackend.objects.dto.TbPersonaDto;
+import com.unprg.unprgcertificategeneratorbackend.objects.dto.*;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbParticipante;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbParticipanteId;
 import com.unprg.unprgcertificategeneratorbackend.repositories.TbParticipanteRepository;
@@ -56,6 +53,7 @@ public class TbParticipanteServiceImpl implements TbParticipanteService {
         TbParticipanteDto template = TbParticipanteDto.builder()
                 .defTbEvento(new TbEventoDto())
                 .defTbPersona(new TbPersonaDto())
+                .defTbTipoParticipante(new TbTipoParticipanteDto())
                 .build();
         Optional<TbParticipante> tbParticipante = tbParticipanteRepository.findById(id.toEntity());
         return tbParticipante.map(participante -> TbParticipanteDto.build().fromEntity(template, participante)).orElse(null);
@@ -66,6 +64,7 @@ public class TbParticipanteServiceImpl implements TbParticipanteService {
         TbParticipanteDto template = TbParticipanteDto.builder()
                 .defTbEvento(TbEventoDto.build())
                 .defTbPersona(TbPersonaDto.build())
+                .defTbTipoParticipante(TbTipoParticipanteDto.build())
                 .build();
         List<TbParticipante> tbParticipanteList = tbParticipanteRepository.findAll();
         return tbParticipanteList.stream().map(participante -> TbParticipanteDto.build().fromEntity(template, participante)).toList();
@@ -76,6 +75,7 @@ public class TbParticipanteServiceImpl implements TbParticipanteService {
         TbParticipanteDto template = TbParticipanteDto.builder()
                 .defTbEvento(TbEventoDto.build())
                 .defTbPersona(TbPersonaDto.build())
+                .defTbTipoParticipante(TbTipoParticipanteDto.build())
                 .build();
         List<TbParticipante> tbParticipanteList = tbParticipanteRepository.findAllByTbEventoId(k);
         return tbParticipanteList.stream().map(template::fromEntity).toList();

@@ -306,7 +306,7 @@ public class CertificateGenerationService {
 
         // Obtener firmas relacionadas al evento
         List<TbFormatoCertificadoFirmaDto> firmasEvento =
-                tbFormatoCertificadoFirmaService.findAllByIdTbEventoCertificado(participante.getTbEvento().getId());
+                tbFormatoCertificadoFirmaService.findAllByIdFormatoCertificado(participante.getTbEvento().getId());
 
         List<TbFirmaDto> firmasDto = firmasEvento.stream()
                 .map(TbFormatoCertificadoFirmaDto::getTbFirma)

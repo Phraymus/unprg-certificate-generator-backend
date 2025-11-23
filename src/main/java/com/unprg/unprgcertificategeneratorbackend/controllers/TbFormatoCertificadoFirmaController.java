@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tbeventoformatocertificadofirmas")
+@RequestMapping("/api/tbformatocertificadofirmas")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 class TbFormatoCertificadoFirmaController extends GenericController<TbFormatoCertificadoFirmaDto, TbFormatoCertificadoFirmaIdDto> {
@@ -39,20 +39,20 @@ class TbFormatoCertificadoFirmaController extends GenericController<TbFormatoCer
                 .idtbFormatoCertificado(idEventoFormato)
                 .build();
         TbFormatoCertificadoFirmaDto dto = getCrud().findById(id);
-        return ResponseEntity.ok(ApiResponse.ok("obtener Evento Formato Certificado Firma por id", dto));
+        return ResponseEntity.ok(ApiResponse.ok("obtener Formato Certificado Firma por id", dto));
     }
 
     @GetMapping(path = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> findAll() {
         List<TbFormatoCertificadoFirmaDto> list = tbFormatoCertificadoFirmaService.findAll();
-        return ResponseEntity.ok(ApiResponse.ok("obtener Eventos Formato Certificado Firmas", list));
+        return ResponseEntity.ok(ApiResponse.ok("obtener listado de Formato Certificado Firmas", list));
     }
 
-    @GetMapping(path = "/findByEventoFormato/{idTbEventoFormatoCertificado}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/findAllByIdFormatoCertificado/{idFormatoCertificado}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> findAllByIdTbEvento(
-            @PathVariable("idTbEventoFormatoCertificado") Integer idTbEventoFormatoCertificado) {
+            @PathVariable("idFormatoCertificado") Integer idFormatoCertificado) {
         List<TbFormatoCertificadoFirmaDto> list =
-                tbFormatoCertificadoFirmaService.findAllByIdTbEventoCertificado(idTbEventoFormatoCertificado);
-        return ResponseEntity.ok(ApiResponse.ok("obtener Eventos Formato Certificado Firmas por idTbEvento", list));
+                tbFormatoCertificadoFirmaService.findAllByIdFormatoCertificado(idFormatoCertificado);
+        return ResponseEntity.ok(ApiResponse.ok("obtener Eventos Formato Certificado Firmas por idFormatoCertificado", list));
     }
 }

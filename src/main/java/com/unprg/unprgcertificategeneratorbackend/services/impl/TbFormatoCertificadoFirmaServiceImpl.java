@@ -2,6 +2,7 @@ package com.unprg.unprgcertificategeneratorbackend.services.impl;
 
 import com.unprg.unprgcertificategeneratorbackend.objects.dto.*;
 import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbFormatoCertificadoFirma;
+import com.unprg.unprgcertificategeneratorbackend.objects.entity.TbFormatoCertificadoFirmaId;
 import com.unprg.unprgcertificategeneratorbackend.repositories.TbFormatoCertificadoFirmaRepository;
 import com.unprg.unprgcertificategeneratorbackend.services.TbFormatoCertificadoFirmaService;
 import jakarta.transaction.Transactional;
@@ -22,7 +23,12 @@ public class TbFormatoCertificadoFirmaServiceImpl implements TbFormatoCertificad
     @Override
     public TbFormatoCertificadoFirmaDto insert(TbFormatoCertificadoFirmaDto tbFormatoCertificadoFirmaDto) {
 //        tbEventoFormatoCertificadoFirmaRepository.deleteAllByTbEventoFormatoCertificadoIdtbEvento(tbEventoFormatoCertificadoFirmaDto.getTbEventoFormatoCertificadoIdtbEvento().toEntity());
-        TbFormatoCertificadoFirma tbFormatoCertificadoFirma = tbFormatoCertificadoFirmaRepository.save(tbFormatoCertificadoFirmaDto.toEntity());
+        TbFormatoCertificadoFirma entity = tbFormatoCertificadoFirmaDto.toEntity();
+        entity.setId(TbFormatoCertificadoFirmaId.builder()
+                .idTbFirma(tbFormatoCertificadoFirmaDto.getTbFirma().getId())
+                .idTbFormatoCertificado(tbFormatoCertificadoFirmaDto.getTbFormatoCertificado().getId())
+                .build());
+        TbFormatoCertificadoFirma tbFormatoCertificadoFirma = tbFormatoCertificadoFirmaRepository.save(entity);
         return tbFormatoCertificadoFirmaDto.fromEntity(tbFormatoCertificadoFirma);
     }
 
@@ -50,13 +56,12 @@ public class TbFormatoCertificadoFirmaServiceImpl implements TbFormatoCertificad
     }
 
     @Override
-    public List<TbFormatoCertificadoFirmaDto> findAllByIdTbEventoCertificado(Integer idTbEventoFormatoCertificado) {
+    public List<TbFormatoCertificadoFirmaDto> findAllByIdFormatoCertificado(Integer idTbEventoFormatoCertificado) {
         TbFormatoCertificadoFirmaDto template = TbFormatoCertificadoFirmaDto.builder()
                 .defTbFormatoCertificado(new TbFormatoCertificadoDto())
                 .defTbFirma(new TbFirmaDto())
                 .build();
-//        List<TbFormatoCertificadoFirma> tbFormatoCertificadoFirmaList = tbEventoFormatoCertificadoFirmaRepository.findAllByTbEventoFormatoCertificadoIdtbEventoId(idTbEventoFormatoCertificado);
-//        return tbFormatoCertificadoFirmaList.stream().map(eventoFormatoCertificadoFirma -> TbFormatoCertificadoFirmaDto.build().fromEntity(template, eventoFormatoCertificadoFirma)).toList();
-        return Collections.emptyList();
+        List<TbFormatoCertificadoFirma> tbFormatoCertificadoFirmaList = tbFormatoCertificadoFirmaRepository.findAllByTbFormatoCertificadoId(idTbEventoFormatoCertificado);
+        return tbFormatoCertificadoFirmaList.stream().map(eventoFormatoCertificadoFirma -> TbFormatoCertificadoFirmaDto.build().fromEntity(template, eventoFormatoCertificadoFirma)).toList();
     }
 }
